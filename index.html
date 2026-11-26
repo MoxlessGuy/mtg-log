@@ -1,0 +1,1057 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>MTG Match Log</title>
+<meta name="description" content="Personal Magic: The Gathering match log. Data stays on this device.">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#161d27" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MTG Log">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: sticky header band with tabs; one 1120px column with summary tiles, then paired panels; all editing happens in a right-hand sheet. */
+:root{
+  --bg:#f2f4f7; --surface:#ffffff; --surface-2:#e9edf3; --line:#d6dce6; --fg:#131a25; --muted:#586477;
+  --accent:#2a59c9; --accent-fg:#ffffff; --accent-soft:#e1e9fa;
+  --win:#17804a; --win-soft:#d8efe1; --on-win:#ffffff;
+  --loss:#c23636; --loss-soft:#f6dddd; --on-loss:#ffffff;
+  --draw:#946000; --draw-soft:#f4e8cd; --on-draw:#ffffff;
+  --mana-w:#f3eac4; --mana-u:#2f73cf; --mana-b:#3a3540; --mana-r:#d4442f; --mana-g:#2a8a52; --mana-ring:rgba(0,0,0,.18);
+  --scrim:rgba(14,20,30,.38); --shadow:0 18px 48px rgba(14,20,30,.18);
+  --font-display:"Archivo","Segoe UI",system-ui,sans-serif;
+  --font-body:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e131a; --surface:#161d27; --surface-2:#1f2834; --line:#2b3644; --fg:#e3e8ef; --muted:#909cb0;
+    --accent:#83a8ff; --accent-fg:#0b1222; --accent-soft:#1d2a47;
+    --win:#56c98c; --win-soft:#14301f; --on-win:#07130c;
+    --loss:#ff8585; --loss-soft:#3a1c21; --on-loss:#1d0a0b;
+    --draw:#e8b84f; --draw-soft:#362b13; --on-draw:#1d1606;
+    --mana-w:#e8deb2; --mana-u:#4b8be2; --mana-b:#5a5461; --mana-r:#e25b46; --mana-g:#3ba267; --mana-ring:rgba(255,255,255,.22);
+    --scrim:rgba(0,0,0,.58); --shadow:0 18px 48px rgba(0,0,0,.55);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e131a; --surface:#161d27; --surface-2:#1f2834; --line:#2b3644; --fg:#e3e8ef; --muted:#909cb0;
+  --accent:#83a8ff; --accent-fg:#0b1222; --accent-soft:#1d2a47;
+  --win:#56c98c; --win-soft:#14301f; --on-win:#07130c;
+  --loss:#ff8585; --loss-soft:#3a1c21; --on-loss:#1d0a0b;
+  --draw:#e8b84f; --draw-soft:#362b13; --on-draw:#1d1606;
+  --mana-w:#e8deb2; --mana-u:#4b8be2; --mana-b:#5a5461; --mana-r:#e25b46; --mana-g:#3ba267; --mana-ring:rgba(255,255,255,.22);
+  --scrim:rgba(0,0,0,.58); --shadow:0 18px 48px rgba(0,0,0,.55);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html.locked{overflow:hidden}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:14.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+h1,h2,h3{font-family:var(--font-display);text-wrap:balance;margin:0;letter-spacing:-.01em}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.muted{color:var(--muted)}
+.sm{font-size:12.5px}
+.mono,.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.min0{min-width:0}
+.center{text-align:center}
+.hint{color:var(--muted);font-size:12.5px;margin:0}
+
+/* Header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.top-inner{max-width:1120px;margin:0 auto;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;align-items:center;flex-wrap:wrap;gap:8px 20px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:800;font-size:17px;white-space:nowrap}
+.brand-mark{display:inline-flex;gap:2px}
+.brand-mark .pip{width:9px;height:9px}
+.tabs{order:3;flex:1 1 100%;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;margin-inline:-6px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:7px 12px;border-radius:8px;color:var(--muted);text-decoration:none;font-weight:600;font-size:14px;white-space:nowrap}
+.tab:hover{color:var(--fg)}
+.tab[aria-current="page"]{color:var(--fg);background:var(--surface-2)}
+.btn-new{margin-left:auto}
+@media (min-width:760px){ .tabs{order:0;flex:1 1 auto;margin-inline:0} .btn-new{margin-left:0} }
+
+/* Buttons */
+.btn{font:inherit;font-weight:600;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:38px;padding:7px 14px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--muted)}
+.btn:disabled{opacity:.6;cursor:progress}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--accent);padding-inline:8px}
+.btn.ghost:hover{background:var(--accent-soft)}
+.btn.danger{color:var(--loss);border-color:var(--loss-soft)}
+.btn.danger[data-armed]{background:var(--loss);border-color:var(--loss);color:var(--on-loss)}
+.btn.sm{min-height:32px;padding:4px 11px;font-size:13px}
+.icon-btn{font:inherit;font-size:22px;line-height:1;width:36px;height:36px;border-radius:9px;border:0;background:transparent;color:var(--muted);cursor:pointer}
+.icon-btn:hover{background:var(--surface-2);color:var(--fg)}
+
+/* Page */
+.wrap{max-width:1120px;margin:0 auto;padding-block:22px 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+.viewhead{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.viewhead h1{font-size:24px;font-weight:800}
+.head-actions{display:flex;gap:8px;flex-wrap:wrap}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.filters select{width:auto;min-width:0;max-width:100%}
+.note{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:10px 14px;border-radius:10px;background:var(--accent-soft);color:var(--fg);font-size:13.5px}
+.note.bad{background:var(--loss-soft)}
+.note.ex{background:var(--draw-soft)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0}
+.panel.flush{padding:0;overflow:hidden}
+.panel h2,.sec{font-size:15px;font-weight:700;margin-bottom:12px}
+.sec.pad{padding:16px 16px 0;margin-bottom:8px}
+.panel-head{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px 12px;margin-bottom:12px}
+.panel-head h2{margin:0}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:18px}
+.empty{color:var(--muted)}
+.empty p{margin:0 0 12px}
+
+/* Tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600}
+.tile .val{font-family:var(--font-mono);font-size:27px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.25}
+.tile .sub{color:var(--muted);font-size:12.5px}
+.good{color:var(--win)} .bad{color:var(--loss)}
+.skel .lbl,.skel .val,.skel .sub{background:var(--surface-2);border-radius:6px;color:transparent}
+@media (prefers-reduced-motion:no-preference){ .skel{animation:pulse 1.4s ease-in-out infinite} @keyframes pulse{50%{opacity:.55}} }
+
+/* Result marks */
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--surface-2);color:var(--muted);white-space:nowrap}
+.chip.W{background:var(--win-soft);color:var(--win)}
+.chip.L{background:var(--loss-soft);color:var(--loss)}
+.chip.D{background:var(--draw-soft);color:var(--draw)}
+.strip{display:flex;flex-wrap:wrap;gap:5px}
+.sq{width:26px;height:26px;border-radius:6px;display:inline-grid;place-items:center;font-family:var(--font-mono);font-size:11.5px;font-weight:600}
+.sq.W{background:var(--win);color:var(--on-win)}
+.sq.L{background:var(--loss);color:var(--on-loss)}
+.sq.D{background:var(--draw);color:var(--on-draw)}
+.sq.empty{border:1.5px dashed var(--line)}
+.gp{font-family:var(--font-mono);font-size:10px;font-weight:600;padding:3px 5px;border-radius:5px;letter-spacing:.02em}
+.gp.W{background:var(--win-soft);color:var(--win)}
+.gp.L{background:var(--loss-soft);color:var(--loss)}
+.gp.D{background:var(--draw-soft);color:var(--draw)}
+.pips{display:inline-flex;gap:3px;vertical-align:-1px}
+.pip{display:inline-block;width:12px;height:12px;border-radius:50%;box-shadow:inset 0 0 0 1px var(--mana-ring)}
+.pip.W{background:var(--mana-w)} .pip.U{background:var(--mana-u)} .pip.B{background:var(--mana-b)} .pip.R{background:var(--mana-r)} .pip.G{background:var(--mana-g)}
+
+/* Stats */
+.splits{display:flex;flex-direction:column;gap:12px}
+.srow{display:grid;grid-template-columns:minmax(0,1.4fr) 58px 46px minmax(50px,1fr);gap:10px;align-items:center}
+.srow .num{text-align:right}
+.wrbar{position:relative;display:block;height:6px;border-radius:3px;background:var(--surface-2)}
+.wrbar i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--accent)}
+.wrbar::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--muted);opacity:.55}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;white-space:nowrap}
+td.name{overflow-wrap:anywhere}
+.barcol{width:84px}
+
+/* Match list */
+.legend{margin-top:-6px}
+.mlist{display:flex;flex-direction:column}
+.mrow{display:grid;grid-template-columns:120px 96px minmax(0,1fr) auto;grid-template-areas:"res date main games";gap:4px 14px;align-items:center;width:100%;padding:11px 16px;border:0;border-bottom:1px solid var(--line);background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.mrow:last-child{border-bottom:0}
+.mrow:hover{background:var(--surface-2)}
+.m-res{grid-area:res;display:flex;align-items:center;gap:8px}
+.score{font-family:var(--font-mono);font-weight:600;font-size:13px}
+.m-date{grid-area:date;color:var(--muted);font-size:13px}
+.m-main{grid-area:main;display:flex;flex-direction:column;min-width:0}
+.m-opp{font-weight:600;overflow-wrap:anywhere}
+.m-meta{color:var(--muted);font-size:12.5px;overflow-wrap:anywhere}
+.m-games{grid-area:games;display:flex;gap:4px;flex-wrap:wrap}
+@media (max-width:640px){ .mrow{grid-template-columns:auto minmax(0,1fr);grid-template-areas:"res date" "main main" "games games"} .m-date{justify-self:end} }
+
+/* Leagues */
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px}
+.lcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.lcard-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.lcard-deck{font-weight:600;display:flex;align-items:center;gap:8px;overflow-wrap:anywhere}
+.rec{font-family:var(--font-mono);font-weight:600;font-size:20px;white-space:nowrap}
+.slots{display:flex;gap:6px;flex-wrap:wrap}
+.lcard-actions,.row-actions,.dcard-actions,.start-actions{display:flex;gap:8px;flex-wrap:wrap}
+.dist{display:flex;flex-direction:column;gap:8px;max-width:560px}
+.drow{display:grid;grid-template-columns:52px minmax(0,1fr) 28px;gap:12px;align-items:center}
+.drow .mono:last-child{text-align:right}
+.dbar{display:block;height:14px;border-radius:4px;background:var(--surface-2);position:relative;overflow:hidden}
+.dbar i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:4px}
+.llist{display:flex;flex-direction:column}
+.lrow{border-top:1px solid var(--line)}
+.lrow-btn{display:grid;grid-template-columns:64px minmax(0,1fr) auto 16px;gap:12px;align-items:center;width:100%;padding:12px 16px;border:0;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.lrow-btn:hover{background:var(--surface-2)}
+.lrow-btn .rec{font-size:16px}
+.lrow-btn .min0{display:flex;flex-direction:column}
+.chev{color:var(--muted);transition:transform .15s}
+.lrow.open .chev{transform:rotate(180deg)}
+.lrow-body{padding:0 0 14px;background:var(--bg)}
+.lrow-body .row-actions{padding:12px 16px 0}
+.lrow-body > p{padding:12px 16px 0;margin:0}
+
+/* Decks */
+.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:12px}
+.dcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.dcard.archived{opacity:.7}
+.dcard-top{display:flex;align-items:center;gap:8px;min-height:16px}
+.dcard h3{font-size:18px;font-weight:700;overflow-wrap:anywhere}
+.dcard p{margin:0}
+.dstats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0}
+.dstats div{display:flex;flex-direction:column;min-width:0}
+.dstats dt{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600}
+.dstats dd{margin:0;font-family:var(--font-mono);font-weight:600;font-size:15px}
+
+/* Sideboard */
+.plans{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:12px}
+.plan{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.plan-head{display:flex;flex-direction:column;gap:2px}
+.plan-head h3{font-size:16px;font-weight:700;overflow-wrap:anywhere}
+.plan p{margin:0}
+.inout{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.io-lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:4px}
+.io-lbl.in{color:var(--win)} .io-lbl.out{color:var(--loss)}
+pre{margin:0;font-family:var(--font-mono);font-size:12.5px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;background:var(--surface-2);border-radius:8px;padding:8px 10px}
+.plan-notes{font-size:13.5px;white-space:pre-wrap}
+
+/* Start */
+.start{padding:28px;display:flex;flex-direction:column;gap:14px;max-width:760px}
+.start h1{font-size:26px;font-weight:800}
+.start p{margin:0;max-width:62ch}
+.steps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:62ch}
+
+/* Sheet */
+.sheet-backdrop{position:fixed;inset:0;background:var(--scrim);z-index:40}
+.sheet{position:fixed;top:0;right:0;bottom:0;width:min(580px,100%);z-index:41;background:var(--surface);border-left:1px solid var(--line);box-shadow:var(--shadow);overflow-y:auto;overscroll-behavior:contain;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-right:env(safe-area-inset-right,0px)}
+.sheet-inner{padding:18px 22px 28px}
+.sheet form{display:flex;flex-direction:column;gap:16px}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.sheet-head h2{font-size:20px;font-weight:800}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0;border:0;padding:0;margin:0}
+.field > label,.field > .lbl,.field legend{font-size:12.5px;font-weight:600;color:var(--muted);text-transform:none;letter-spacing:0;padding:0}
+.opt{font-weight:400}
+.count{font-weight:400;font-family:var(--font-mono);margin-left:6px}
+input[type=text],input[type=date],input[type=number],select,textarea{font:inherit;font-size:14.5px;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:8px 11px;width:100%;min-height:40px;min-width:0}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+textarea{resize:vertical;font-family:var(--font-mono);font-size:13px;line-height:1.55}
+textarea.prose{font-family:var(--font-body);font-size:14px}
+.row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:440px){ .row2{grid-template-columns:1fr} }
+.games{display:flex;flex-direction:column;gap:8px}
+.game{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px}
+.gname{font-family:var(--font-mono);font-weight:600;width:28px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--bg)}
+.seg button{font:inherit;font-size:13px;font-weight:600;border:0;border-right:1px solid var(--line);background:transparent;color:var(--muted);padding:7px 12px;cursor:pointer;min-height:36px}
+.seg button:last-child{border-right:0}
+.seg button:hover{color:var(--fg)}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+.seg button.W[aria-pressed="true"]{background:var(--win);color:var(--on-win)}
+.seg button.L[aria-pressed="true"]{background:var(--loss);color:var(--on-loss)}
+.seg button.D[aria-pressed="true"]{background:var(--draw);color:var(--on-draw)}
+.colorpick{display:flex;gap:8px;flex-wrap:wrap;min-height:40px;align-items:center}
+.cbtn{width:30px;height:30px;border-radius:50%;border:0;cursor:pointer;box-shadow:inset 0 0 0 1px var(--mana-ring);opacity:.3}
+.cbtn[aria-pressed="true"]{opacity:1;box-shadow:inset 0 0 0 1px var(--mana-ring),0 0 0 2px var(--surface),0 0 0 4px var(--accent)}
+.cbtn.W{background:var(--mana-w)} .cbtn.U{background:var(--mana-u)} .cbtn.B{background:var(--mana-b)} .cbtn.R{background:var(--mana-r)} .cbtn.G{background:var(--mana-g)}
+.check{display:flex;align-items:center;gap:8px;font-size:14px}
+.versions{border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.versions summary{cursor:pointer;font-weight:600}
+.versions ul{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.versions .hint{margin-top:8px}
+.ver{border-top:1px solid var(--line);padding-top:10px}
+.ver-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ver-head .btn{margin-left:auto}
+.diff{font-size:12.5px;margin-top:4px;display:flex;flex-wrap:wrap;gap:4px 10px}
+.plus{color:var(--win)} .minus{color:var(--loss)}
+.form-err{margin:0;color:var(--loss);font-weight:600;font-size:13.5px}
+.warn{margin:0;color:var(--draw);font-size:13px;font-weight:600}
+.sheet-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:4px}
+.spacer{flex:1}
+.sidepeek summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:13px}
+.sidepeek pre{margin-top:8px}
+
+/* Toasts */
+.toasts{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:max-content;max-width:calc(100% - 32px)}
+.toast{background:var(--fg);color:var(--bg);padding:9px 16px;border-radius:10px;font-weight:600;font-size:13.5px;box-shadow:var(--shadow);transition:opacity .25s}
+.toast.err{background:var(--loss);color:var(--on-loss)}
+.toast.out{opacity:0}
+
+/* iPhone: 16px fields stop Safari from zooming in when a field gets focus */
+@supports (-webkit-touch-callout:none){ input[type=text],input[type=date],input[type=number],select,textarea{font-size:16px} }
+body{-webkit-tap-highlight-color:transparent}
+.file-in{position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"><span class="pip W"></span><span class="pip U"></span><span class="pip B"></span><span class="pip R"></span><span class="pip G"></span></span>MTG Match Log</div>
+    <nav class="tabs" aria-label="Sections">
+      <a class="tab" href="#summary">Summary</a>
+      <a class="tab" href="#matches">Matches</a>
+      <a class="tab" href="#leagues">Leagues</a>
+      <a class="tab" href="#tournaments">Tournaments</a>
+      <a class="tab" href="#decks">Decks</a>
+      <a class="tab" href="#sideboard">Sideboard</a>
+    </nav>
+    <button type="button" class="btn primary btn-new" data-act="new-match">+ Match</button>
+  </div>
+</header>
+<main id="main" class="wrap"></main>
+<div id="sheet-backdrop" class="sheet-backdrop" hidden></div>
+<aside id="sheet" class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden><div id="sheet-body" class="sheet-inner"></div></aside>
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<input type="file" id="import-file" class="file-in" accept=".json,application/json" tabindex="-1" aria-hidden="true">
+
+<script>
+/* Device storage: the same db / downloads / user calls the claude.ai page makes, answered on this device.
+   Each collection is one localStorage entry: {docId: data}. */
+(function(){
+'use strict';
+const PREFIX='mtglog.v1.', COLS=['matches','decks','leagues','tournaments','plans'];
+const clone=v=>JSON.parse(JSON.stringify(v));
+function storageOK(){ try{ const k=PREFIX+'probe'; localStorage.setItem(k,'1'); localStorage.removeItem(k); return true; }catch(e){ return false; } }
+const mem={}, subs={};
+function load(col){ try{ const raw=localStorage.getItem(PREFIX+col); const o=raw?JSON.parse(raw):{}; return o&&typeof o==='object'&&!Array.isArray(o)?o:{}; }catch(e){ return {}; } }
+function get(col){ if(!mem[col]) mem[col]=load(col); return mem[col]; }
+function subsOf(col){ if(!subs[col]) subs[col]=new Set(); return subs[col]; }
+function stamp(k){ try{ localStorage.setItem(PREFIX+k,String(Date.now())); }catch(e){} }
+function persist(col,next){ try{ localStorage.setItem(PREFIX+col,JSON.stringify(next)); }catch(e){ throw {code:'quota_exceeded'}; } mem[col]=next; stamp('lastWrite'); }
+function snap(col){ const o=get(col); return {docs:Object.keys(o).map(id=>({id,data:()=>clone(o[id])})),metadata:{fromCache:false}}; }
+function notify(col){ setTimeout(()=>{ const s=snap(col); subsOf(col).forEach(fn=>{ try{ fn(s); }catch(e){} }); },0); }
+function write(col,fn){ const next=Object.assign({},get(col)); fn(next); persist(col,next); notify(col); }
+const db={
+  collection(col){
+    return {
+      doc(id){ return {
+        set:async data=>{ write(col,o=>{ o[id]=clone(data); }); },
+        update:async data=>{ if(!get(col)[id]) throw {code:'not_found'}; write(col,o=>{ o[id]=Object.assign({},o[id],clone(data)); }); },
+        delete:async()=>{ write(col,o=>{ delete o[id]; }); }
+      }; },
+      onSnapshot(cb){ const s=subsOf(col); s.add(cb); setTimeout(()=>{ if(s.has(cb)) cb(snap(col)); },0); return ()=>s.delete(cb); }
+    };
+  },
+  /* cols: {collection:{docId:data}}. replace=true makes this device an exact copy of the backup. */
+  async importAll(cols,replace){
+    const prev={}; COLS.forEach(c=>{ prev[c]=localStorage.getItem(PREFIX+c); });
+    try{ COLS.forEach(c=>{ const next=replace?{}:Object.assign({},get(c)); const src=cols[c]||{}; Object.keys(src).forEach(id=>{ next[id]=clone(src[id]); }); persist(c,next); }); }
+    catch(e){ COLS.forEach(c=>{ try{ if(prev[c]==null) localStorage.removeItem(PREFIX+c); else localStorage.setItem(PREFIX+c,prev[c]); }catch(x){} delete mem[c]; }); COLS.forEach(notify); throw e; }
+    stamp('lastExport'); COLS.forEach(notify);
+  },
+  backupInfo(){ let e=0,w=0; try{ e=+localStorage.getItem(PREFIX+'lastExport')||0; w=+localStorage.getItem(PREFIX+'lastWrite')||0; }catch(x){} return {lastExport:e,lastWrite:w}; },
+  markExported(){ stamp('lastExport'); }
+};
+/* Another tab or window changed the data: reload that collection. */
+window.addEventListener('storage',e=>{ if(e.key&&e.key.indexOf(PREFIX)===0){ const col=e.key.slice(PREFIX.length); if(COLS.includes(col)){ delete mem[col]; notify(col); } } });
+
+const mobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&/Macintosh/.test(navigator.userAgent));
+const downloads={
+  /* Phones get the share sheet (Save to Files, Mail, AirDrop…); computers get a normal download. */
+  async save(req){
+    const name=String(req&&req.filename||'backup.json'), blob=new Blob([req.data],{type:'application/json'});
+    if(mobile&&navigator.share&&navigator.canShare&&typeof File==='function'){
+      const file=new File([blob],name,{type:'application/json'});
+      if(navigator.canShare({files:[file]})){
+        try{ await navigator.share({files:[file]}); return {status:'saved'}; }
+        catch(e){ if(e&&e.name==='AbortError') throw {code:'declined'}; }
+      }
+    }
+    const url=URL.createObjectURL(blob), a=document.createElement('a');
+    a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),30000);
+    return {status:'saved'};
+  }
+};
+
+const ok=storageOK();
+if(ok&&navigator.storage&&navigator.storage.persist) navigator.storage.persist().catch(()=>{});
+window.claude={ use:async name=>name==='db'?(ok?db:null):name==='downloads'?downloads:name==='user'?{isOwner:async()=>true}:null };
+
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)) window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+})();
+</script>
+
+<script>
+(function(){
+'use strict';
+document.documentElement.lang='en';
+
+const FORMATS=['Modern','Pioneer','Standard','Legacy','Vintage','Pauper','Premodern','Limited','Other'];
+const EVENTS=[['league','League'],['endstep','Endstep'],['tournament','Paper/webcam tournament'],['challenge','Challenge'],['prelim','Preliminary'],['qualifier','Qualifier / RCQ'],['showcase','Showcase'],['casual','Casual'],['other','Other']];
+const EVENT_LABEL=Object.fromEntries(EVENTS);
+const VIEWS=['summary','matches','leagues','tournaments','decks','sideboard'];
+const COLORS=['W','U','B','R','G'];
+const COLOR_NAME={W:'White',U:'Blue',B:'Black',R:'Red',G:'Green'};
+const RES_LABEL={W:'Win',L:'Loss',D:'Draw'};
+const GAME_LABEL={W:'Won',L:'Lost',D:'Drawn'};
+const COLS=['matches','decks','leagues','tournaments','plans'];
+const LOCALE='en-GB';
+
+const S={db:null,status:'loading',slow:false,err:null,notOwner:false,any:false,
+  matches:[],decks:[],leagues:[],tournaments:[],plans:[],got:{matches:false,decks:false,leagues:false,tournaments:false,plans:false},
+  view:'summary',f:{format:'all',deck:'all',period:'all'},listLimit:100,showArchived:false,sbDeck:null,leagueOpen:null,tourOpen:null,archAll:false};
+let sheetCtx=null, lastFocus=null, renderTimer=null, slowTimer=null;
+
+/* ---------- helpers ---------- */
+const $=(s,r)=>(r||document).querySelector(s);
+const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const key=s=>String(s==null?'':s).trim().toLowerCase();
+const uid=p=>p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const pad=n=>String(n).padStart(2,'0');
+const isoOf=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const today=()=>isoOf(new Date());
+function fmtDate(iso){ if(!iso) return 'no date'; if(!/^\d{4}-\d{2}-\d{2}/.test(iso)) return iso; const p=iso.slice(0,10).split('-').map(Number); return new Date(p[0],p[1]-1,p[2]).toLocaleDateString(LOCALE,{day:'numeric',month:'short',year:'numeric'}); }
+const since=iso=>iso?'since '+fmtDate(iso):'date unknown';
+function fmtStamp(ms){ return ms?new Date(ms).toLocaleDateString(LOCALE,{day:'numeric',month:'short',year:'numeric'}):'—'; }
+const pctTxt=x=>x==null?'—':Math.round(x*100)+'%';
+const wrCls=x=>x==null?'':x>=0.55?'good':x<=0.45?'bad':'';
+const cards=n=>n===1?'1 card':n+' cards';
+const plural=(n,one,many)=>n+' '+(n===1?one:many);
+function slug(s){ return key(s).normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)||'x'; }
+const byName=(a,b)=>String(a.name||'').localeCompare(String(b.name||''),LOCALE);
+const norm=s=>String(s||'').replace(/\r/g,'').trim();
+
+/* ---------- data logic ---------- */
+function gamesOf(m){ return m&&Array.isArray(m.games)?m.games.filter(g=>g&&(g.r==='W'||g.r==='L'||g.r==='D')):[]; }
+function resultOf(m){ const g=gamesOf(m); if(!g.length) return (m&&(m.result==='W'||m.result==='L'))?m.result:'D'; let w=0,l=0; g.forEach(x=>{ if(x.r==='W')w++; else if(x.r==='L')l++; }); return w>l?'W':l>w?'L':'D'; }
+function scoreOf(m){ const g=gamesOf(m); return g.filter(x=>x.r==='W').length+'–'+g.filter(x=>x.r==='L').length; }
+function rec(list){ let W=0,L=0,D=0; list.forEach(m=>{ const r=resultOf(m); if(r==='W')W++; else if(r==='L')L++; else D++; }); return {W,L,D,n:list.length,wr:(W+L)?W/(W+L):null}; }
+function gameRec(list,pred,ordered){ let W=0,L=0; list.forEach(m=>{ if(ordered&&m.orderUnknown) return; gamesOf(m).forEach((g,i)=>{ if(pred&&!pred(g,i)) return; if(g.r==='W')W++; else if(g.r==='L')L++; }); }); return {W,L,n:W+L,wr:(W+L)?W/(W+L):null}; }
+const recTxt=r=>r.W+'–'+r.L+(r.D?'–'+r.D:'');
+function sortedMatches(){ return S.matches.slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||(b.createdAt||0)-(a.createdAt||0)); }
+function periodFrom(){ const p=S.f.period; if(p==='all') return null; const d=new Date(); if(p==='30') d.setDate(d.getDate()-30); else if(p==='90') d.setDate(d.getDate()-90); else d.setMonth(0,1); return isoOf(d); }
+function filtered(){ const f=S.f, from=periodFrom(); return sortedMatches().filter(m=>(f.format==='all'||m.format===f.format)&&(f.deck==='all'||m.deckId===f.deck)&&(!from||String(m.date||'')>=from)); }
+const deckById=id=>id?S.decks.find(d=>d.id===id)||null:null;
+const leagueById=id=>id?S.leagues.find(l=>l.id===id)||null:null;
+const tourById=id=>id?S.tournaments.find(t=>t.id===id)||null:null;
+function tourMatches(id){ return S.matches.filter(m=>m.tournamentId===id).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0)); }
+const isWin=p=>/^(1st|1°|1|primo|first|winner|won)$/i.test(String(p||'').trim());
+const isTop8=p=>isWin(p)||/top\s*(2|4|8)\b|^(2nd|3rd|4th|[2-8]°|final|semifinal)/i.test(String(p||'').trim());
+function toursFiltered(){ const f=S.f, from=periodFrom(); return S.tournaments.filter(t=>(f.format==='all'||t.format===f.format)&&(f.deck==='all'||t.deckId===f.deck)&&(!from||String(t.date||'')>=from)); }
+function deckLabel(id,fallback){ const d=deckById(id); return d?d.name:(fallback||'Deleted deck'); }
+function activeDecks(includeId){ return S.decks.filter(d=>!d.archived||d.id===includeId).sort(byName); }
+function byArchetype(list){ const map=new Map(); list.forEach(m=>{ const k=key(m.opp)||'?'; if(!map.has(k)) map.set(k,{k,name:String(m.opp||'').trim()||'Unknown',ms:[]}); map.get(k).ms.push(m); }); return [...map.values()].map(x=>Object.assign(x,{r:rec(x.ms)})).sort((a,b)=>b.ms.length-a.ms.length||a.name.localeCompare(b.name,LOCALE)); }
+function archetypeNames(){ const seen=new Map(); sortedMatches().forEach(m=>{ const k=key(m.opp); if(k&&!seen.has(k)) seen.set(k,String(m.opp).trim()); }); S.plans.forEach(p=>{ const k=key(p.archetype); if(k&&!seen.has(k)) seen.set(k,String(p.archetype).trim()); }); return [...seen.values()]; }
+function leagueMatches(id){ return S.matches.filter(m=>m.leagueId===id).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))||(a.createdAt||0)-(b.createdAt||0)); }
+function leagueState(l){ const ms=leagueMatches(l.id), r=rec(ms), size=Math.max(1,parseInt(l.size,10)||5); const st=l.status==='dropped'?'dropped':ms.length>=size?'done':'active'; return {l,ms,r,size,st,trophy:st==='done'&&r.L===0&&r.D===0}; }
+function leaguesFiltered(){ const f=S.f, from=periodFrom(); return S.leagues.filter(l=>(f.format==='all'||l.format===f.format)&&(f.deck==='all'||l.deckId===f.deck)&&(!from||String(l.startedAt||'')>=from)); }
+function planFor(deckId,arch){ const k=key(arch); return S.plans.find(p=>p.deckId===deckId&&key(p.archetype)===k)||null; }
+function parseList(txt){ const map=new Map(); let total=0; String(txt||'').split(/\r?\n/).forEach(raw=>{ const line=raw.trim(); if(!line||/^(\/\/|#)/.test(line)||/^(sideboard|deck|companion|main(deck)?)\s*:?$/i.test(line)) return; const m=line.match(/^(\d+)\s*x?\s+(.+)$/i); const q=m?parseInt(m[1],10):1; const name=(m?m[2]:line).trim(); total+=q; const k=key(name); const cur=map.get(k); map.set(k,{name,q:(cur?cur.q:0)+q}); }); return {map,total}; }
+function diffLists(a,b){ const A=parseList(a).map,B=parseList(b).map,out=[]; new Set([...A.keys(),...B.keys()]).forEach(k=>{ const qa=A.has(k)?A.get(k).q:0, qb=B.has(k)?B.get(k).q:0; if(qa!==qb) out.push({name:(B.get(k)||A.get(k)).name,d:qb-qa}); }); return out.sort((x,y)=>y.d-x.d||x.name.localeCompare(y.name)); }
+const diffTxt=arr=>arr.map(x=>`<span class="${x.d>0?'plus':'minus'}">${x.d>0?'+':'−'}${Math.abs(x.d)} ${esc(x.name)}</span>`).join('');
+
+/* ---------- store ---------- */
+async function withRetry(fn){ try{ return await fn(); }catch(e){ if(e&&e.code==='unavailable'){ await new Promise(r=>setTimeout(r,500+Math.random()*700)); return await fn(); } throw e; } }
+function need(){ if(!S.db) throw {code:'nodb'}; return S.db; }
+const save=(col,id,data)=>withRetry(()=>need().collection(col).doc(id).set(data));
+const patch=(col,id,data)=>withRetry(()=>need().collection(col).doc(id).update(data));
+const remove=(col,id)=>withRetry(()=>need().collection(col).doc(id).delete());
+function errMsg(e){ const c=e&&e.code;
+  if(c==='nodb') return 'This browser isn’t letting the app save data: turn off Private Browsing and try again.';
+  if(c==='quota_exceeded') return 'This device has no room left for the log: export a backup, then delete some old entries.';
+  if(c==='invalid_argument'||c==='transform_error') return 'Save refused: only the owner can change this data.';
+  if(c==='unavailable') return 'No connection: try again in a moment.';
+  if(c==='revoked') return 'Data access is no longer available.';
+  return 'Couldn’t save: try again.'; }
+
+/* ---------- small UI pieces ---------- */
+function pips(colors){ const c=Array.isArray(colors)?colors:[]; const on=COLORS.filter(x=>c.includes(x)); if(!on.length) return ''; return `<span class="pips" role="img" aria-label="${on.map(x=>COLOR_NAME[x]).join(', ')}">${on.map(x=>`<span class="pip ${x}"></span>`).join('')}</span>`; }
+const chip=r=>`<span class="chip ${r}">${RES_LABEL[r]}</span>`;
+const bar=wr=>`<span class="wrbar" aria-hidden="true"><i style="width:${wr==null?0:Math.round(wr*100)}%"></i></span>`;
+const tile=(lbl,val,sub,cls)=>`<div class="tile"><span class="lbl">${lbl}</span><span class="val ${cls||''}">${val}</span><span class="sub">${sub||''}</span></div>`;
+function splitRow(label,r,hint){ return `<div class="srow"><span>${label}${hint?` <span class="muted sm">${hint}</span>`:''}</span><span class="num">${r.W}–${r.L}</span><span class="num ${wrCls(r.wr)}">${pctTxt(r.wr)}</span>${bar(r.wr)}</div>`; }
+function statTable(first,rows){ if(!rows.length) return '<p class="hint">Nothing to show yet.</p>';
+  return `<div class="tbl-wrap"><table><thead><tr><th>${first}</th><th class="num">M</th><th class="num">Record</th><th class="num">WR</th><th class="barcol"><span class="sr">Win rate bar</span></th></tr></thead><tbody>${rows.map(x=>`<tr><td class="name">${x.label}</td><td class="num">${x.r.n}</td><td class="num">${recTxt(x.r)}</td><td class="num ${wrCls(x.r.wr)}">${pctTxt(x.r.wr)}</td><td class="barcol">${bar(x.r.wr)}</td></tr>`).join('')}</tbody></table></div>`; }
+
+function filtersHTML(){
+  const used=new Set(S.matches.map(m=>m.format).concat(S.leagues.map(l=>l.format)).concat(S.tournaments.map(t=>t.format)).filter(Boolean));
+  const fmts=[...new Set(FORMATS.concat([...used]))].filter(f=>used.has(f)||S.f.format===f);
+  const on=S.f.format!=='all'||S.f.deck!=='all'||S.f.period!=='all';
+  return `<div class="filters" role="group" aria-label="Filters">
+    <select id="flt-format" data-filter="format" aria-label="Format"><option value="all">All formats</option>${fmts.map(f=>`<option value="${esc(f)}"${S.f.format===f?' selected':''}>${esc(f)}</option>`).join('')}</select>
+    <select id="flt-deck" data-filter="deck" aria-label="Deck"><option value="all">All decks</option>${S.decks.slice().sort(byName).map(d=>`<option value="${esc(d.id)}"${S.f.deck===d.id?' selected':''}>${esc(d.name)}${d.archived?' (archived)':''}</option>`).join('')}</select>
+    <select id="flt-period" data-filter="period" aria-label="Period">${[['all','All time'],['30','Last 30 days'],['90','Last 90 days'],['year','This year']].map(([v,l])=>`<option value="${v}"${S.f.period===v?' selected':''}>${l}</option>`).join('')}</select>
+    ${on?'<button type="button" class="btn ghost sm" data-act="clear-filters">Clear filters</button>':''}
+  </div>`;
+}
+
+function banners(){
+  let h='';
+  if(S.notOwner) h+='<div class="note">This page is private: only its owner can see and edit the data.</div>';
+  if(S.err) h+=`<div class="note bad">${S.err.code==='revoked'?'Data access is no longer available in this view.':'Can’t read the data ('+esc(S.err.code||'error')+'). Try reopening the page in a moment.'}</div>`;
+  else if(S.slow) h+='<div class="note">The data isn’t responding yet: check your connection. What you see may be out of date.</div>';
+  if(S.db&&S.db.backupInfo&&S.matches.length&&S.dl){ const b=S.db.backupInfo(); if(b.lastWrite>b.lastExport&&Date.now()-b.lastExport>14*864e5) h+=`<div class="note"><span>Your log is saved only on this device. ${b.lastExport?'Last backup: '+esc(fmtStamp(b.lastExport))+'.':'You haven’t exported a backup yet.'}</span><button type="button" class="btn sm" data-act="export">Export backup</button></div>`; }
+  if(COLS.some(c=>S[c].some(x=>x.example))) h+='<div class="note ex"><span>You’re looking at <strong>sample data</strong> that shows how it works. Delete it before logging your own matches.</span><button type="button" class="btn sm" data-act="del-examples" data-confirm data-confirm-label="Confirm: delete samples">Delete samples</button></div>';
+  return h;
+}
+
+function emptyStart(){ return `<section class="panel start"><h1>Your match log</h1><p>Log your matches here after playing: deck, opponent archetype, the result of each game and whether you were on the play or on the draw. The stats update by themselves.</p><ol class="steps"><li>Log a match with <strong>+ Match</strong>. You can create the deck right there.</li><li>Pick <strong>League</strong> as the event: the league opens by itself and counts matches up to 5.</li><li>Save your list in <strong>Decks</strong>, and write what comes in and out against each archetype in <strong>Sideboard</strong>.</li></ol><div class="start-actions"><button type="button" class="btn primary" data-act="new-match">+ Log your first match</button><button type="button" class="btn" data-act="new-deck">Create a deck</button></div><p class="hint">Moving your log from another device? <button type="button" class="btn ghost sm" data-act="import">Import a backup</button></p></section>`; }
+function loadingHTML(){ return `<div class="tiles">${'<div class="tile skel"><span class="lbl">&nbsp;</span><span class="val">&nbsp;</span><span class="sub">&nbsp;</span></div>'.repeat(4)}</div><p class="muted center">Loading your data…</p>`; }
+function noDbHTML(){ return '<section class="panel start"><h1>MTG Match Log</h1><p>The log keeps its data on this device, but this browser isn’t allowing it: Private Browsing is probably on. Open the app from its Home Screen icon, or turn Private Browsing off in Safari.</p></section>'; }
+
+/* ---------- views ---------- */
+function viewSummary(){
+  if(!S.matches.length) return emptyStart();
+  const ms=filtered();
+  let h=`<div class="viewhead"><h1>Summary</h1><div class="head-actions"><button type="button" class="btn sm" data-act="import">Import backup</button>${S.dl?'<button type="button" class="btn sm" data-act="export">Export backup</button>':''}</div></div>${filtersHTML()}`;
+  if(!ms.length) return h+'<div class="panel empty">No matches with these filters.</div>';
+  const r=rec(ms), g=gameRec(ms);
+  const done=leaguesFiltered().map(leagueState).filter(x=>x.st==='done'); const tro=done.filter(x=>x.trophy).length;
+  h+=`<section class="tiles">
+    ${tile('Match record',recTxt(r),plural(r.n,'match','matches')+(r.D?' · '+plural(r.D,'draw','draws'):''))}
+    ${tile('Match win rate',pctTxt(r.wr),'draws excluded',wrCls(r.wr))}
+    ${tile('Game win rate',pctTxt(g.wr),g.W+'–'+g.L+' in games',wrCls(g.wr))}
+    ${tile('League trophies',String(tro),done.length?plural(done.length,'league completed','leagues completed'):'no leagues completed')}
+  </section>`;
+  const last=ms.slice(0,20).reverse();
+  h+=`<section class="panel"><div class="panel-head"><h2>Recent form</h2><span class="muted sm">last ${last.length}, oldest to newest</span></div><div class="strip">${last.map(m=>{ const x=resultOf(m); return `<span class="sq ${x}" title="${esc(fmtDate(m.date)+' · vs '+(m.opp||'Unknown')+' · '+scoreOf(m))}">${x}</span>`; }).join('')}</div></section>`;
+  const evs=EVENTS.map(([k,l])=>({label:esc(l),r:rec(ms.filter(m=>m.event===k))})).filter(x=>x.r.n);
+  const arch=byArchetype(ms), shown=S.archAll?arch:arch.slice(0,12);
+  const dmap=new Map(); ms.forEach(m=>{ const k=m.deckId||'?'; if(!dmap.has(k)) dmap.set(k,[]); dmap.get(k).push(m); });
+  const drows=[...dmap.entries()].map(([id,list])=>{ const d=deckById(id); return {label:(d?pips(d.colors)+' ':'')+esc(deckLabel(id,list[0].deckName)),r:rec(list)}; }).sort((a,b)=>b.r.n-a.r.n);
+  h+=`<section class="grid-2">
+    <div class="panel"><h2>By event type</h2>${statTable('Event',evs)}</div>
+    <div class="panel"><h2>By deck</h2>${statTable('Deck',drows)}</div>
+  </section>
+  <section class="panel"><h2>Vs archetypes</h2>${statTable('Archetype',shown.map(a=>({label:esc(a.name),r:a.r})))}${arch.length>12?`<button type="button" class="btn ghost sm" data-act="arch-all" style="margin-top:8px">${S.archAll?'Show fewer':'Show all ('+arch.length+')'}</button>`:''}</section>`;
+  return h;
+}
+
+function rowHTML(m){
+  const r=resultOf(m), d=deckById(m.deckId), lg=leagueById(m.leagueId), tr=tourById(m.tournamentId);
+  let lgTxt=''; if(lg){ const st=leagueState(lg); lgTxt=` <span class="muted">(${st.ms.indexOf(m)+1}/${st.size})</span>`; }
+  const evTxt=tr?esc(tr.name||'Tournament'):esc(EVENT_LABEL[m.event]||m.event||'')+lgTxt;
+  const gs=m.orderUnknown?'':gamesOf(m).map((g,i)=>`<span class="gp ${g.r}" title="G${i+1} ${GAME_LABEL[g.r].toLowerCase()}${g.play===true?', on the play':g.play===false?', on the draw':''}">${g.play===true?'OTP':g.play===false?'OTD':'G'+(i+1)}</span>`).join('');
+  const meta=[(d?pips(d.colors)+' ':'')+esc(deckLabel(m.deckId,m.deckName)), esc(m.format||''), evTxt, m.notes?`<span title="${esc(m.notes)}">${esc(m.notes.length>40?m.notes.slice(0,40)+'…':m.notes)}</span>`:''].filter(Boolean).join(' · ');
+  return `<button type="button" class="mrow" data-act="edit-match" data-id="${esc(m.id)}">
+    <span class="m-res">${chip(r)}<span class="score">${scoreOf(m)}</span></span>
+    <span class="m-date">${esc(fmtDate(m.date))}</span>
+    <span class="m-main"><span class="m-opp">vs ${esc(m.opp||'Unknown')}${m.oppName?` <span class="muted">· ${esc(m.oppName)}</span>`:''}${m.example?' <span class="chip">Sample</span>':''}</span><span class="m-meta">${meta}</span></span>
+    <span class="m-games">${gs}</span>
+  </button>`;
+}
+
+function viewMatches(){
+  if(!S.matches.length) return emptyStart();
+  const ms=filtered();
+  let h=`<div class="viewhead"><h1>Matches</h1><span class="muted">${plural(ms.length,'match','matches')}</span></div>${filtersHTML()}`;
+  if(!ms.length) return h+'<div class="panel empty">No matches with these filters.</div>';
+  h+='<p class="hint legend">Each tag is a game: green won, red lost. OTP = on the play, OTD = on the draw. Tap a match to edit it.</p>';
+  h+=`<div class="panel flush"><div class="mlist">${ms.slice(0,S.listLimit).map(rowHTML).join('')}</div></div>`;
+  if(ms.length>S.listLimit) h+=`<div><button type="button" class="btn" data-act="more">Show ${Math.min(100,ms.length-S.listLimit)} more</button></div>`;
+  return h;
+}
+
+function activeCard(x){
+  const l=x.l, d=deckById(l.deckId), slots=[];
+  for(let i=0;i<x.size;i++){ const m=x.ms[i]; slots.push(m?`<span class="sq ${resultOf(m)}" title="${esc('vs '+(m.opp||'Unknown')+' · '+scoreOf(m))}">${resultOf(m)}</span>`:'<span class="sq empty" aria-hidden="true"></span>'); }
+  return `<article class="lcard"><div class="lcard-head"><div class="min0"><div class="lcard-deck">${d?pips(d.colors):''}${esc(deckLabel(l.deckId,l.deckName))}</div><div class="muted sm">${esc(l.format||'')} · ${esc(since(l.startedAt))}${l.example?' · sample':''}</div></div><span class="rec">${recTxt(x.r)}</span></div>
+    <div class="slots" role="img" aria-label="${x.ms.length} of ${x.size} matches played">${slots.join('')}</div>
+    <div class="lcard-actions"><button type="button" class="btn primary sm" data-act="new-match-league" data-id="${esc(l.id)}">+ Match in this league</button><button type="button" class="btn sm danger" data-act="drop-league" data-id="${esc(l.id)}" data-confirm data-confirm-label="Confirm drop">Drop</button></div></article>`;
+}
+function pastRow(x){
+  const l=x.l, open=S.leagueOpen===l.id, d=deckById(l.deckId);
+  const tag=x.st==='dropped'?'<span class="chip">Drop</span>':x.trophy?'<span class="chip W">Trophy</span>':'<span></span>';
+  return `<div class="lrow${open?' open':''}"><button type="button" class="lrow-btn" data-act="toggle-league" data-id="${esc(l.id)}" aria-expanded="${open}">
+    <span class="rec">${recTxt(x.r)}</span><span class="min0"><span class="lcard-deck">${d?pips(d.colors):''}${esc(deckLabel(l.deckId,l.deckName))}</span><span class="muted sm">${esc(l.format||'')} · ${esc(fmtDate(l.startedAt))}${l.example?' · sample':''}</span></span>${tag}<span class="chev" aria-hidden="true">▾</span></button>
+    ${open?`<div class="lrow-body">${x.ms.length?`<div class="mlist">${x.ms.map(rowHTML).join('')}</div>`:'<p class="muted">No matches in this league.</p>'}<div class="row-actions">${x.st==='dropped'?`<button type="button" class="btn sm" data-act="undrop-league" data-id="${esc(l.id)}">Reopen league</button>`:''}<button type="button" class="btn sm danger" data-act="delete-league" data-id="${esc(l.id)}" data-confirm data-confirm-label="Confirm delete">Delete league</button></div></div>`:''}
+  </div>`;
+}
+function viewLeagues(){
+  let h='<div class="viewhead"><h1>Leagues</h1><button type="button" class="btn" data-act="new-league">+ New league</button></div>';
+  if(!S.leagues.length) return h+'<div class="panel empty"><p>No leagues yet. When you log a match, pick “League” as the event: the league opens by itself and closes after 5 matches.</p><button type="button" class="btn primary" data-act="new-match">+ Log a match</button></div>';
+  h+=filtersHTML();
+  const all=leaguesFiltered().map(leagueState).sort((a,b)=>String(b.l.startedAt||'').localeCompare(String(a.l.startedAt||''))||(b.l.createdAt||0)-(a.l.createdAt||0));
+  const active=all.filter(x=>x.st==='active'), past=all.filter(x=>x.st!=='active'), done=past.filter(x=>x.st==='done');
+  if(!all.length) return h+'<div class="panel empty">No leagues with these filters.</div>';
+  const tro=done.filter(x=>x.trophy).length, drops=past.length-done.length;
+  const avg=done.length?done.reduce((s,x)=>s+x.r.W,0)/done.length:null;
+  h+=`<section class="tiles">${tile('Completed leagues',String(done.length),drops?plural(drops,'with a drop','with a drop'):'no drops')}${tile('Trophies',String(tro),done.length?pctTxt(tro/done.length)+' of completed':'—')}${tile('Average wins',avg==null?'—':avg.toLocaleString(LOCALE,{maximumFractionDigits:1}),'per completed league')}${tile('In progress',String(active.length),active.length===1?'open league':'open leagues')}</section>`;
+  if(active.length) h+=`<section><h2 class="sec">In progress</h2><div class="lgrid">${active.map(activeCard).join('')}</div></section>`;
+  if(done.length){
+    const dist=new Map(); done.forEach(x=>{ const k=recTxt(x.r); dist.set(k,(dist.get(k)||0)+1); });
+    const rows=[...dist.entries()].sort((a,b)=>parseInt(b[0],10)-parseInt(a[0],10)), max=Math.max(...rows.map(r=>r[1]));
+    h+=`<section class="panel"><h2>How your leagues end</h2><div class="dist">${rows.map(([k,n])=>`<div class="drow"><span class="mono">${k}</span><span class="dbar"><i style="width:${Math.round(n*100/max)}%"></i></span><span class="mono">${n}</span></div>`).join('')}</div></section>`;
+  }
+  if(past.length) h+=`<section class="panel flush"><h2 class="sec pad">Finished</h2><div class="llist">${past.map(pastRow).join('')}</div></section>`;
+  return h;
+}
+
+function tourRow(x){
+  const t=x.t, open=S.tourOpen===t.id, d=deckById(t.deckId);
+  const tag=t.placement?`<span class="chip${isWin(t.placement)?' W':''}">${esc(t.placement)}</span>`:'<span></span>';
+  return `<div class="lrow${open?' open':''}"><button type="button" class="lrow-btn" data-act="toggle-tour" data-id="${esc(t.id)}" aria-expanded="${open}">
+    <span class="rec">${recTxt(x.r)}</span><span class="min0"><span class="lcard-deck">${esc(t.name||'Tournament')}</span><span class="muted sm">${esc(fmtDate(t.date))} · ${d?pips(d.colors)+' ':''}${esc(deckLabel(t.deckId,t.deckName))}${t.example?' · sample':''}</span></span>${tag}<span class="chev" aria-hidden="true">▾</span></button>
+    ${open?`<div class="lrow-body">${x.ms.length?`<div class="mlist">${x.ms.map(rowHTML).join('')}</div>`:'<p class="muted">No matches in this tournament.</p>'}${t.notes?`<p class="muted">${esc(t.notes)}</p>`:''}<div class="row-actions"><button type="button" class="btn primary sm" data-act="new-match-tour" data-id="${esc(t.id)}">+ Round</button><button type="button" class="btn sm" data-act="edit-tour" data-id="${esc(t.id)}">Edit tournament</button></div></div>`:''}
+  </div>`;
+}
+function viewTournaments(){
+  let h='<div class="viewhead"><h1>Tournaments</h1><button type="button" class="btn" data-act="new-tour">+ New tournament</button></div>';
+  if(!S.tournaments.length) return h+'<div class="panel empty"><p>No tournaments yet. When you log a match, pick “Paper/webcam tournament” as the event and name the tournament: add the next rounds to the same tournament.</p><button type="button" class="btn primary" data-act="new-match">+ Log a match</button></div>';
+  h+=filtersHTML();
+  const all=toursFiltered().map(t=>{ const ms=tourMatches(t.id); return {t,ms,r:rec(ms)}; }).sort((a,b)=>String(b.t.date||'').localeCompare(String(a.t.date||''))||(b.t.createdAt||0)-(a.t.createdAt||0));
+  if(!all.length) return h+'<div class="panel empty">No tournaments with these filters.</div>';
+  const tot=rec([].concat(...all.map(x=>x.ms))), wins=all.filter(x=>isWin(x.t.placement)).length, top8=all.filter(x=>isTop8(x.t.placement)).length;
+  h+=`<section class="tiles">${tile('Tournaments',String(all.length),all.length===1?'tournament played':'tournaments played')}${tile('Wins',String(wins),'first place')}${tile('Top 8',String(top8),'wins included')}${tile('Round record',recTxt(tot),pctTxt(tot.wr)+' of matches',wrCls(tot.wr))}</section>`;
+  return h+`<section class="panel flush"><div class="llist">${all.map(tourRow).join('')}</div></section>`;
+}
+
+function deckCard(d){
+  const ms=S.matches.filter(m=>m.deckId===d.id), r=rec(ms);
+  const main=parseList(d.main).total, side=parseList(d.side).total, nv=Array.isArray(d.versions)?d.versions.length:0;
+  const tro=S.leagues.filter(l=>l.deckId===d.id).map(leagueState).filter(x=>x.trophy).length;
+  return `<article class="dcard${d.archived?' archived':''}">
+    <div class="dcard-top">${pips(d.colors)}<span class="muted sm">${esc(d.format||'')}${d.archived?' · archived':''}${d.example?' · sample':''}</span></div>
+    <h3>${esc(d.name)}</h3>
+    <dl class="dstats"><div><dt>Record</dt><dd>${recTxt(r)}</dd></div><div><dt>WR</dt><dd class="${wrCls(r.wr)}">${pctTxt(r.wr)}</dd></div><div><dt>Trophies</dt><dd>${tro}</dd></div><div><dt>Cards</dt><dd>${main?main+(side?'/'+side:''):'—'}</dd></div></dl>
+    <p class="muted sm">${main?(nv?plural(nv,'previous version','previous versions')+' · ':'')+'list from '+fmtStamp(d.listAt||d.updatedAt):'No list saved'}</p>
+    <div class="dcard-actions"><button type="button" class="btn sm" data-act="edit-deck" data-id="${esc(d.id)}">List &amp; versions</button><button type="button" class="btn sm" data-act="goto-sb" data-id="${esc(d.id)}">Sideboard</button></div>
+  </article>`;
+}
+function viewDecks(){
+  const lastUsed=new Map(); S.matches.forEach(m=>{ if(m.deckId&&String(m.date||'')>String(lastUsed.get(m.deckId)||'')) lastUsed.set(m.deckId,m.date); });
+  const list=S.decks.filter(d=>S.showArchived||!d.archived).sort((a,b)=>String(lastUsed.get(b.id)||'').localeCompare(String(lastUsed.get(a.id)||''))||byName(a,b));
+  const nArch=S.decks.filter(d=>d.archived).length;
+  let h=`<div class="viewhead"><h1>Decks</h1><div class="head-actions">${nArch?`<button type="button" class="btn ghost sm" data-act="toggle-archived">${S.showArchived?'Hide archived':'Show archived ('+nArch+')'}</button>`:''}<button type="button" class="btn" data-act="new-deck">+ New deck</button></div></div>`;
+  if(!list.length) return h+'<div class="panel empty"><p>No decks yet. Create one to save its list, sideboard and versions.</p><button type="button" class="btn primary" data-act="new-deck">+ New deck</button></div>';
+  return h+`<div class="dgrid">${list.map(deckCard).join('')}</div>`;
+}
+
+function planCard(deckId,gp){
+  const p=planFor(deckId,gp.name);
+  const stats=gp.ms.length?`${recTxt(gp.r)} in matches · ${pctTxt(gp.r.wr)} win rate`:'never faced with this deck';
+  const body=p?`<div class="inout"><div><div class="io-lbl in">In · ${parseList(p.in).total}</div><pre>${esc(p.in||'—')}</pre></div><div><div class="io-lbl out">Out · ${parseList(p.out).total}</div><pre>${esc(p.out||'—')}</pre></div></div>${p.notes?`<p class="plan-notes">${esc(p.notes)}</p>`:''}`:'<p class="muted">No plan written yet.</p>';
+  return `<article class="plan"><header class="plan-head"><h3>${esc(gp.name)}</h3><span class="muted sm">${stats}</span></header>${body}<div><button type="button" class="btn sm" data-act="edit-plan" data-deck="${esc(deckId)}" data-arch="${esc(gp.name)}">${p?'Edit plan':'Write plan'}</button></div></article>`;
+}
+function viewSideboard(){
+  let h='<div class="viewhead"><h1>Sideboard</h1></div>';
+  const decks=activeDecks();
+  if(!decks.length) return h+'<div class="panel empty"><p>Create a deck first: this is where you write what comes in and out against each archetype.</p><button type="button" class="btn primary" data-act="new-deck">+ New deck</button></div>';
+  let deckId=S.sbDeck&&deckById(S.sbDeck)?S.sbDeck:null;
+  if(!deckId){ const lm=sortedMatches().find(m=>{ const d=deckById(m.deckId); return d&&!d.archived; }); deckId=lm?lm.deckId:decks[0].id; }
+  const d=deckById(deckId);
+  const groups=byArchetype(S.matches.filter(m=>m.deckId===deckId)).filter(x=>x.k!=='?');
+  S.plans.filter(p=>p.deckId===deckId).forEach(p=>{ const k=key(p.archetype); if(k&&!groups.some(g=>g.k===k)) groups.push({k,name:String(p.archetype).trim(),ms:[],r:rec([])}); });
+  h+=`<div class="filters"><select id="sb-deck" aria-label="Deck">${activeDecks(deckId).map(x=>`<option value="${esc(x.id)}"${x.id===deckId?' selected':''}>${esc(x.name)}</option>`).join('')}</select><button type="button" class="btn" data-act="edit-plan" data-deck="${esc(deckId)}" data-arch="">+ Plan for an archetype</button></div>`;
+  if(!groups.length) return h+`<div class="panel empty">No archetypes faced with ${esc(d.name)} and no plans written yet. Add a plan or log some matches.</div>`;
+  return h+`<div class="plans">${groups.map(g=>planCard(deckId,g)).join('')}</div>`;
+}
+
+const VIEW_FN={summary:viewSummary,matches:viewMatches,leagues:viewLeagues,tournaments:viewTournaments,decks:viewDecks,sideboard:viewSideboard};
+function render(){
+  document.querySelectorAll('.tab').forEach(a=>{ if(a.getAttribute('href')==='#'+S.view) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
+  const main=$('#main'), ae=document.activeElement, fid=ae&&main.contains(ae)?ae.id:'';
+  if(S.status==='nodb') main.innerHTML=noDbHTML();
+  else if(!S.any) main.innerHTML=banners()+loadingHTML();
+  else main.innerHTML=banners()+VIEW_FN[S.view]();
+  if(fid){ const el=document.getElementById(fid); if(el) el.focus({preventScroll:true}); }
+}
+function scheduleRender(){ if(renderTimer) return; renderTimer=setTimeout(()=>{ renderTimer=null; render(); },16); }
+
+/* ---------- sheet ---------- */
+const sheet=$('#sheet'), backdrop=$('#sheet-backdrop'), sheetBody=$('#sheet-body');
+const sheetHead=t=>`<div class="sheet-head"><h2 id="sheet-title">${t}</h2><button type="button" class="icon-btn" data-act="close" aria-label="Close">×</button></div>`;
+const actions=(del)=>`<p class="form-err" id="form-err" hidden></p><div class="sheet-actions">${del||''}<span class="spacer"></span><button type="button" class="btn" data-act="close">Cancel</button><button type="submit" class="btn primary">Save</button></div>`;
+function openSheet(html,ctx){
+  lastFocus=document.activeElement; sheetBody.innerHTML=html; sheetCtx=ctx; sheet.hidden=false; backdrop.hidden=false; sheet.scrollTop=0;
+  document.documentElement.classList.add('locked');
+  if(window.matchMedia&&window.matchMedia('(pointer:fine)').matches){ const f=sheetBody.querySelector('input:not([type=hidden]):not([readonly]),select,textarea'); if(f) f.focus({preventScroll:true}); }
+}
+function closeSheet(){ sheet.hidden=true; backdrop.hidden=true; sheetBody.innerHTML=''; sheetCtx=null; document.documentElement.classList.remove('locked'); if(lastFocus&&lastFocus.isConnected&&lastFocus.focus) lastFocus.focus({preventScroll:true}); }
+function formErr(msg){ const el=$('#form-err'); if(el){ el.textContent=msg; el.hidden=false; } return false; }
+function formatOptions(sel){ const list=FORMATS.includes(sel)||!sel?FORMATS:FORMATS.concat([sel]); return list.map(f=>`<option value="${esc(f)}"${f===sel?' selected':''}>${esc(f)}</option>`).join(''); }
+function deckOptions(sel,fallbackName){ let h=activeDecks(sel).map(d=>`<option value="${esc(d.id)}"${d.id===sel?' selected':''}>${esc(d.name)}</option>`).join(''); if(sel&&!deckById(sel)) h+=`<option value="${esc(sel)}" selected>${esc((fallbackName||'Deck')+' (deleted)')}</option>`; return h; }
+
+/* match */
+function openMatch(id,preset){
+  preset=preset||{};
+  const m=id?S.matches.find(x=>x.id===id):null;
+  if(id&&!m){ toast('This match no longer exists.','err'); return; }
+  const sorted=sortedMatches(), last=sorted.find(x=>!x.example)||sorted[0];
+  const decks=activeDecks();
+  let deckId=m?(m.deckId||''):(preset.deckId||'');
+  if(!m&&!deckId){ const ld=last&&deckById(last.deckId); deckId=ld&&!ld.archived?ld.id:(decks[0]?decks[0].id:''); }
+  const d=deckById(deckId);
+  const format=m?(m.format||'Modern'):(preset.format||(d&&d.format)||(last&&last.format)||'Modern');
+  const event=m?(m.event||'other'):(preset.leagueId?'league':preset.tournamentId?'tournament':((last&&last.event)||'league'));
+  const F={games:[0,1,2].map(i=>{ const g=m?gamesOf(m)[i]:null; return g?{r:g.r,play:g.play===true?true:g.play===false?false:null,auto:false}:{r:null,play:null,auto:false}; })};
+  const html=`<form id="match-form" novalidate>
+    ${sheetHead(m?'Edit match':'New match')}
+    <div class="row2">
+      <div class="field"><label for="mf-date">Date</label><input type="date" id="mf-date" value="${esc(m?(m.date||''):(preset.date||today()))}"></div>
+      <div class="field"><label for="mf-format">Format</label><select id="mf-format">${formatOptions(format)}</select></div>
+    </div>
+    <div class="field"><label for="mf-deck">Your deck</label><select id="mf-deck">${deckOptions(deckId,m&&m.deckName)}<option value="__new"${!deckId?' selected':''}>＋ New deck…</option></select>
+      <input type="text" id="mf-newdeck" placeholder="New deck name" autocomplete="off" aria-label="New deck name" hidden></div>
+    <div class="row2">
+      <div class="field"><label for="mf-event">Event</label><select id="mf-event">${EVENTS.map(([k,l])=>`<option value="${k}"${k===event?' selected':''}>${l}</option>`).join('')}</select></div>
+      <div class="field" id="mf-league-field"><label for="mf-league">League</label><select id="mf-league"></select></div>
+      <div class="field" id="mf-tour-field" hidden><label for="mf-tour">Tournament</label><select id="mf-tour"></select><input type="text" id="mf-newtour" placeholder="Tournament name" autocomplete="off" aria-label="New tournament name" hidden></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label for="mf-opp">Opponent archetype</label><input type="text" id="mf-opp" list="arch-list" value="${esc(m?m.opp:'')}" placeholder="e.g. UW Landstill" autocomplete="off"></div>
+      <div class="field"><label for="mf-oppname">Opponent <span class="opt">optional</span></label><input type="text" id="mf-oppname" value="${esc(m?m.oppName:'')}" placeholder="MTGO username" autocomplete="off"></div>
+    </div>
+    <datalist id="arch-list">${archetypeNames().map(n=>`<option value="${esc(n)}"></option>`).join('')}</datalist>
+    <fieldset class="field"><legend>Games</legend><div class="games" id="mf-games"></div><p class="hint" id="mf-sum"></p></fieldset>
+    <div class="field"><label for="mf-notes">Notes</label><textarea id="mf-notes" class="prose" rows="3" placeholder="Key cards, mistakes, what to change…">${esc(m?m.notes:'')}</textarea></div>
+    ${actions(m?`<button type="button" class="btn danger" data-act="delete-match" data-id="${esc(m.id)}" data-confirm data-confirm-label="Confirm delete">Delete</button>`:'')}
+  </form>`;
+  openSheet(html,{kind:'match',id:m?m.id:null,m,F,leagueId:m?(m.leagueId||''):(preset.leagueId||''),tournamentId:m?(m.tournamentId||''):(preset.tournamentId||'')});
+  $('#mf-newdeck').hidden=$('#mf-deck').value!=='__new';
+  renderGames(); syncLeagueField();
+}
+function decidedAt(games,n){ let w=0,l=0; for(let i=0;i<n;i++){ if(games[i].r==='W')w++; else if(games[i].r==='L')l++; } return w>=2||l>=2; }
+function renderGames(){
+  const g=sheetCtx.F.games; let h='';
+  for(let i=0;i<3;i++){
+    if(i>0&&(!g[i-1].r||decidedAt(g,i))) break;
+    h+=`<div class="game"><span class="gname">G${i+1}</span>
+      <div class="seg" role="group" aria-label="Result of game ${i+1}">${['W','L','D'].map(r=>`<button type="button" class="${r}" data-act="g-res" data-i="${i}" data-v="${r}" aria-pressed="${g[i].r===r}">${GAME_LABEL[r]}</button>`).join('')}</div>
+      <div class="seg" role="group" aria-label="Play or draw in game ${i+1}"><button type="button" data-act="g-play" data-i="${i}" data-v="play" aria-pressed="${g[i].play===true}">Play</button><button type="button" data-act="g-play" data-i="${i}" data-v="draw" aria-pressed="${g[i].play===false}">Draw</button></div>
+    </div>`;
+  }
+  $('#mf-games').innerHTML=h;
+  const played=collectGames();
+  $('#mf-sum').innerHTML=played.length?`Result: <strong>${RES_LABEL[resultOf({games:played})]} ${scoreOf({games:played})}</strong>`:'Mark at least the first game. From G2 on, play/draw fills in by itself: the loser chooses to play first.';
+}
+function collectGames(){ const out=[]; let w=0,l=0; for(const g of sheetCtx.F.games){ if(!g.r) break; out.push({r:g.r,play:g.play}); if(g.r==='W')w++; else if(g.r==='L')l++; if(w>=2||l>=2) break; } return out; }
+function syncLeagueField(){
+  if(!sheetCtx||sheetCtx.kind!=='match') return;
+  const ev=$('#mf-event').value, fld=$('#mf-league-field'), sel=$('#mf-league'), tfld=$('#mf-tour-field');
+  fld.hidden=ev!=='league'; tfld.hidden=ev!=='tournament';
+  if(ev==='tournament'){
+    const tsel=$('#mf-tour'), want=tsel.value||sheetCtx.tournamentId||'';
+    const items=S.tournaments.slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||(b.createdAt||0)-(a.createdAt||0)).slice(0,40);
+    const wt=tourById(want); if(wt&&!items.includes(wt)) items.unshift(wt);
+    tsel.innerHTML=items.map(t=>`<option value="${esc(t.id)}">${esc(t.name||'Tournament')} · ${esc(fmtDate(t.date))}</option>`).join('')+'<option value="__new">＋ New tournament</option>';
+    tsel.value=items.some(t=>t.id===want)?want:(items[0]&&items[0].date===today()?items[0].id:'__new');
+    $('#mf-newtour').hidden=tsel.value!=='__new';
+  }
+  if(ev!=='league') return;
+  const deckId=$('#mf-deck').value, want=sel.value||sheetCtx.leagueId||'';
+  const items=S.leagues.map(leagueState).filter(x=>x.l.id===sheetCtx.leagueId||(x.st==='active'&&x.l.deckId===deckId));
+  const loose=!!(sheetCtx.m&&sheetCtx.m.event==='league'&&!sheetCtx.m.leagueId);
+  sel.innerHTML=(loose?'<option value="">No league run</option>':'')+items.map(x=>`<option value="${esc(x.l.id)}">${esc(recTxt(x.r))} (${x.ms.length}/${x.size}) · ${esc(since(x.l.startedAt))}</option>`).join('')+'<option value="__new">＋ New league</option>';
+  sel.value=items.some(x=>x.l.id===want)?want:(loose&&want===''?'':(items[0]?items[0].l.id:'__new'));
+}
+async function saveMatch(){
+  const ctx=sheetCtx, m=ctx.m, games=collectGames();
+  if(!games.length) return formErr('Mark the result of at least one game.');
+  const format=$('#mf-format').value, date=$('#mf-date').value||(m?'':today()), now=Date.now(), event=$('#mf-event').value;
+  let deckId=$('#mf-deck').value, deckName;
+  const newDeck=deckId==='__new'||!deckId, newDeckName=$('#mf-newdeck').value.trim();
+  if(newDeck&&!newDeckName) return formErr('Enter the new deck’s name.');
+  let tournamentId=event==='tournament'?$('#mf-tour').value:null; const newTourName=$('#mf-newtour').value.trim();
+  if(event==='tournament'&&(!tournamentId||tournamentId==='__new')&&!newTourName) return formErr('Enter the tournament’s name.');
+  if(newDeck){
+    deckId=uid('d'); deckName=newDeckName;
+    await save('decks',deckId,{name:deckName,format,colors:[],main:'',side:'',notes:'',archived:false,versions:[],listAt:now,createdAt:now,updatedAt:now});
+  } else deckName=deckLabel(deckId,m&&m.deckName);
+  let leagueId=null;
+  if(event==='league'){
+    leagueId=$('#mf-league').value||null;
+    if(leagueId==='__new'){ leagueId=uid('l'); await save('leagues',leagueId,{deckId,deckName,format,size:5,startedAt:date,status:'active',createdAt:now,updatedAt:now}); }
+  }
+  if(event==='tournament'&&(!tournamentId||tournamentId==='__new')){ tournamentId=uid('t'); await save('tournaments',tournamentId,{name:newTourName,date,format,deckId,deckName,placement:'',notes:'',createdAt:now,updatedAt:now}); }
+  const data={date,format,deckId,deckName,event,leagueId,tournamentId,opp:$('#mf-opp').value.trim(),oppName:$('#mf-oppname').value.trim(),games,result:resultOf({games}),notes:$('#mf-notes').value.trim(),createdAt:m?(m.createdAt||now):now,updatedAt:now};
+  if(m&&m.orderUnknown&&games.map(g=>g.r).join('')===gamesOf(m).map(g=>g.r).join('')) data.orderUnknown=true;
+  if(m&&m.example) data.example=true;
+  await save('matches',ctx.id||uid('m'),data);
+  closeSheet(); toast(m?'Match updated':'Match saved');
+}
+
+/* deck */
+function versionsHTML(d){
+  const vs=Array.isArray(d.versions)?d.versions:[]; const items=[];
+  for(let i=vs.length-1;i>=0;i--){
+    const v=vs[i], newer=i===vs.length-1?{main:d.main,side:d.side}:vs[i+1];
+    const dm=diffLists(v.main,newer.main), ds=diffLists(v.side,newer.side);
+    items.push(`<li class="ver"><div class="ver-head"><strong>${esc(fmtStamp(v.at))}</strong><span class="muted sm mono">${parseList(v.main).total}/${parseList(v.side).total}</span><button type="button" class="btn ghost sm" data-act="restore-version" data-i="${i}">Restore</button></div>${dm.length||ds.length?`<div class="diff"><span class="muted">Then:</span>${diffTxt(dm)}${ds.length?'<span class="muted">side</span>'+diffTxt(ds):''}</div>`:''}</li>`);
+  }
+  return `<details class="versions"><summary>Previous versions (${vs.length})</summary><p class="hint">When you save a different list, the old one is kept here. “Then” shows what you changed after that version.</p><ul>${items.join('')}</ul></details>`;
+}
+function openDeck(id){
+  const d=id?deckById(id):null;
+  if(id&&!d){ toast('This deck no longer exists.','err'); return; }
+  const html=`<form id="deck-form" novalidate>
+    ${sheetHead(d?'Deck':'New deck')}
+    <div class="field"><label for="df-name">Name</label><input type="text" id="df-name" value="${esc(d?d.name:'')}" placeholder="e.g. Hermit Druid" autocomplete="off"></div>
+    <div class="row2">
+      <div class="field"><label for="df-format">Format</label><select id="df-format">${formatOptions(d?d.format:((S.decks[0]&&S.decks[0].format)||'Modern'))}</select></div>
+      <div class="field"><span class="lbl" id="df-colors-l">Colors</span><div class="colorpick" role="group" aria-labelledby="df-colors-l">${COLORS.map(c=>`<button type="button" class="cbtn ${c}" data-act="color" data-v="${c}" aria-pressed="${!!(d&&Array.isArray(d.colors)&&d.colors.includes(c))}" title="${COLOR_NAME[c]}"><span class="sr">${COLOR_NAME[c]}</span></button>`).join('')}</div></div>
+    </div>
+    <div class="field"><label for="df-main">Main deck<span class="count" id="df-main-n"></span></label><textarea id="df-main" rows="12" spellcheck="false" placeholder="4 Birds of Paradise&#10;4 Survival of the Fittest&#10;…">${esc(d?d.main:'')}</textarea><span class="hint">One card per line, quantity first. You can paste a list exported from MTGO: if it has a “Sideboard” line, it gets split automatically.</span></div>
+    <div class="field"><label for="df-side">Sideboard<span class="count" id="df-side-n"></span></label><textarea id="df-side" rows="6" spellcheck="false">${esc(d?d.side:'')}</textarea></div>
+    <div class="field"><label for="df-notes">Notes</label><textarea id="df-notes" class="prose" rows="3">${esc(d?d.notes:'')}</textarea></div>
+    ${d?`<label class="check"><input type="checkbox" id="df-arch"${d.archived?' checked':''}> Archived: hidden from the deck pickers</label>`:''}
+    ${d&&Array.isArray(d.versions)&&d.versions.length?versionsHTML(d):''}
+    ${actions(d?`<button type="button" class="btn danger" data-act="delete-deck" data-id="${esc(d.id)}" data-confirm data-confirm-label="Confirm delete">Delete</button>`:'')}
+  </form>`;
+  openSheet(html,{kind:'deck',id:d?d.id:null,d,colors:d&&Array.isArray(d.colors)?d.colors.slice():[]});
+  updateCounts();
+}
+async function saveDeck(){
+  const ctx=sheetCtx, d=ctx.d, name=$('#df-name').value.trim();
+  if(!name) return formErr('Give the deck a name.');
+  let main=$('#df-main').value, side=$('#df-side').value;
+  if(!norm(side)){ const lines=main.split(/\r?\n/), ix=lines.findIndex(l=>/^\s*sideboard\s*:?\s*$/i.test(l)); if(ix>=0){ side=lines.slice(ix+1).join('\n'); main=lines.slice(0,ix).join('\n'); } }
+  main=norm(main); side=norm(side);
+  const now=Date.now(); let versions=d&&Array.isArray(d.versions)?d.versions.slice():[]; let listAt=d?(d.listAt||d.createdAt||now):now;
+  if(d&&(norm(d.main)!==main||norm(d.side)!==side)){ if(norm(d.main)||norm(d.side)){ versions.push({at:listAt,main:d.main||'',side:d.side||''}); if(versions.length>30) versions=versions.slice(-30); } listAt=now; }
+  const data={name,format:$('#df-format').value,colors:COLORS.filter(c=>ctx.colors.includes(c)),main,side,notes:$('#df-notes').value.trim(),archived:d?!!($('#df-arch')&&$('#df-arch').checked):false,versions,listAt,createdAt:d?(d.createdAt||now):now,updatedAt:now};
+  if(d&&d.example) data.example=true;
+  await save('decks',ctx.id||uid('d'),data);
+  closeSheet(); toast(d?'Deck saved':'Deck created');
+}
+
+/* league */
+function openLeague(){
+  const decks=activeDecks();
+  if(!decks.length){ toast('Create a deck first.','err'); openDeck(null); return; }
+  const fd=(S.f.deck!=='all'&&deckById(S.f.deck))||decks[0];
+  const html=`<form id="league-form" novalidate>
+    ${sheetHead('New league')}
+    <p class="hint">Usually not needed: logging a match with event “League” opens the league by itself.</p>
+    <div class="field"><label for="lf-deck">Deck</label><select id="lf-deck">${decks.map(d=>`<option value="${esc(d.id)}"${d.id===fd.id?' selected':''}>${esc(d.name)}</option>`).join('')}</select></div>
+    <div class="row2">
+      <div class="field"><label for="lf-format">Format</label><select id="lf-format">${formatOptions(fd.format||'Modern')}</select></div>
+      <div class="field"><label for="lf-size">Matches in the league</label><input type="number" id="lf-size" min="1" max="20" value="5"></div>
+    </div>
+    <div class="field"><label for="lf-date">Started on</label><input type="date" id="lf-date" value="${today()}"></div>
+    ${actions('')}
+  </form>`;
+  openSheet(html,{kind:'league'});
+}
+async function saveLeague(){
+  const deckId=$('#lf-deck').value, d=deckById(deckId); if(!d) return formErr('Pick a deck.');
+  const size=Math.min(20,Math.max(1,parseInt($('#lf-size').value,10)||5)), now=Date.now();
+  await save('leagues',uid('l'),{deckId,deckName:d.name,format:$('#lf-format').value,size,startedAt:$('#lf-date').value||today(),status:'active',createdAt:now,updatedAt:now});
+  closeSheet(); toast('League opened');
+}
+
+/* tournament */
+function openTour(id){
+  const t=id?tourById(id):null;
+  if(id&&!t){ toast('This tournament no longer exists.','err'); return; }
+  const decks=activeDecks(t&&t.deckId);
+  if(!t&&!decks.length){ toast('Create a deck first.','err'); openDeck(null); return; }
+  const deckId=t?t.deckId:((S.f.deck!=='all'&&deckById(S.f.deck))?S.f.deck:decks[0].id), d=deckById(deckId);
+  const html=`<form id="tour-form" novalidate>
+    ${sheetHead(t?'Tournament':'New tournament')}
+    <div class="field"><label for="tf-name">Name</label><input type="text" id="tf-name" value="${esc(t?t.name:'')}" placeholder="e.g. Webcam 4, Saturday Main" autocomplete="off"></div>
+    <div class="row2">
+      <div class="field"><label for="tf-date">Date</label><input type="date" id="tf-date" value="${esc(t?(t.date||''):today())}"></div>
+      <div class="field"><label for="tf-place">Placement <span class="opt">optional</span></label><input type="text" id="tf-place" value="${esc(t?t.placement:'')}" placeholder="e.g. 1st, Top8, Top16" autocomplete="off"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label for="tf-deck">Deck</label><select id="tf-deck">${deckOptions(deckId,t&&t.deckName)}</select></div>
+      <div class="field"><label for="tf-format">Format</label><select id="tf-format">${formatOptions(t?t.format:((d&&d.format)||'Modern'))}</select></div>
+    </div>
+    <div class="field"><label for="tf-notes">Notes</label><textarea id="tf-notes" class="prose" rows="3">${esc(t?t.notes:'')}</textarea></div>
+    ${actions(t?`<button type="button" class="btn danger" data-act="delete-tour" data-id="${esc(t.id)}" data-confirm data-confirm-label="Confirm delete">Delete</button>`:'')}
+  </form>`;
+  openSheet(html,{kind:'tour',id:t?t.id:null,t});
+}
+async function saveTour(){
+  const ctx=sheetCtx, t=ctx.t, name=$('#tf-name').value.trim(); if(!name) return formErr('Give the tournament a name.');
+  const deckId=$('#tf-deck').value, now=Date.now();
+  const data={name,date:$('#tf-date').value||'',placement:$('#tf-place').value.trim(),deckId,deckName:deckLabel(deckId,t&&t.deckName),format:$('#tf-format').value,notes:$('#tf-notes').value.trim(),createdAt:t?(t.createdAt||now):now,updatedAt:now};
+  if(t&&t.example) data.example=true;
+  await save('tournaments',ctx.id||uid('t'),data);
+  closeSheet(); toast(t?'Tournament saved':'Tournament created');
+}
+async function deleteTour(id){ for(const m of S.matches.filter(x=>x.tournamentId===id)) await patch('matches',m.id,{tournamentId:null,updatedAt:Date.now()}); await remove('tournaments',id); if(S.tourOpen===id) S.tourOpen=null; closeSheet(); toast('Tournament deleted: its matches stay in the log'); }
+
+/* plan */
+function openPlan(deckId,arch){
+  const d=deckById(deckId); if(!d){ toast('Deck not found.','err'); return; }
+  const p=arch?planFor(deckId,arch):null;
+  const html=`<form id="plan-form" novalidate>
+    ${sheetHead(p?'Sideboard plan':'New sideboard plan')}
+    <p class="muted">${pips(d.colors)} ${esc(d.name)}</p>
+    <div class="field"><label for="pf-arch">Against</label><input type="text" id="pf-arch" list="arch-list2" value="${esc(arch||'')}" placeholder="Opponent archetype" autocomplete="off"${arch?' readonly':''}></div>
+    <datalist id="arch-list2">${archetypeNames().map(n=>`<option value="${esc(n)}"></option>`).join('')}</datalist>
+    <div class="row2">
+      <div class="field"><label for="pf-in">In<span class="count" id="pf-in-n"></span></label><textarea id="pf-in" rows="7" spellcheck="false" placeholder="2 Pyroclasm">${esc(p?p.in:'')}</textarea></div>
+      <div class="field"><label for="pf-out">Out<span class="count" id="pf-out-n"></span></label><textarea id="pf-out" rows="7" spellcheck="false" placeholder="2 Cabal Therapy">${esc(p?p.out:'')}</textarea></div>
+    </div>
+    <p class="warn" id="pf-warn" hidden></p>
+    <div class="field"><label for="pf-notes">Matchup notes</label><textarea id="pf-notes" class="prose" rows="4" placeholder="Who’s the beatdown, what to keep, play vs draw differences…">${esc(p?p.notes:'')}</textarea></div>
+    ${d.side?`<details class="sidepeek"><summary>Show the deck’s sideboard</summary><pre>${esc(d.side)}</pre></details>`:''}
+    ${actions(p?`<button type="button" class="btn danger" data-act="delete-plan" data-id="${esc(p.id)}" data-confirm data-confirm-label="Confirm delete">Delete</button>`:'')}
+  </form>`;
+  openSheet(html,{kind:'plan',deckId,p});
+  updateCounts();
+}
+async function savePlan(){
+  const ctx=sheetCtx, arch=$('#pf-arch').value.trim(); if(!arch) return formErr('Enter which archetype the plan is for.');
+  const p=ctx.p||planFor(ctx.deckId,arch), now=Date.now();
+  const data={deckId:ctx.deckId,archetype:arch,in:norm($('#pf-in').value),out:norm($('#pf-out').value),notes:$('#pf-notes').value.trim(),createdAt:p?(p.createdAt||now):now,updatedAt:now};
+  if(p&&p.example) data.example=true;
+  await save('plans',p?p.id:ctx.deckId+'__'+slug(arch),data);
+  closeSheet(); toast('Plan saved');
+}
+function updateCounts(){
+  [['df-main','df-main-n'],['df-side','df-side-n'],['pf-in','pf-in-n'],['pf-out','pf-out-n']].forEach(([a,b])=>{ const ta=document.getElementById(a), out=document.getElementById(b); if(ta&&out) out.textContent=' · '+cards(parseList(ta.value).total); });
+  const w=$('#pf-warn'); if(w){ const i=parseList($('#pf-in').value).total, o=parseList($('#pf-out').value).total; w.hidden=i===o; w.textContent=`${cards(i)} in and ${cards(o)} out: the deck size would change.`; }
+}
+
+/* ---------- toasts ---------- */
+function toast(msg,kind){ const el=document.createElement('div'); el.className='toast'+(kind==='err'?' err':''); el.textContent=msg; $('#toasts').appendChild(el); setTimeout(()=>{ el.classList.add('out'); setTimeout(()=>el.remove(),300); },kind==='err'?5000:2400); }
+
+/* ---------- actions ---------- */
+function arm(btn){ btn.dataset.armed='1'; btn.dataset.label=btn.textContent; btn.textContent=btn.dataset.confirmLabel||'Confirm'; clearTimeout(btn._t); btn._t=setTimeout(()=>{ if(btn.isConnected&&btn.dataset.armed){ delete btn.dataset.armed; btn.textContent=btn.dataset.label; } },4000); }
+async function deleteExamples(){ let n=0; for(const c of ['matches','leagues','tournaments','plans','decks']){ for(const x of S[c].filter(y=>y.example)){ await remove(c,x.id); n++; } } toast(plural(n,'sample item deleted','sample items deleted')); }
+async function deleteLeague(id){ for(const m of S.matches.filter(x=>x.leagueId===id)) await patch('matches',m.id,{leagueId:null,updatedAt:Date.now()}); await remove('leagues',id); if(S.leagueOpen===id) S.leagueOpen=null; toast('League deleted: its matches stay in the log'); }
+async function exportBackup(){
+  if(!S.dl){ toast('Export isn’t available in this view.','err'); return; }
+  const out={app:'MTG Match Log',version:1,exportedAt:new Date().toISOString(),collections:{}};
+  COLS.forEach(c=>{ const o={}; S[c].forEach(d=>{ const copy=Object.assign({},d); delete copy.id; o[d.id]=copy; }); out.collections[c]=o; });
+  try{ await S.dl.save({filename:'mtg-match-log-backup-'+today()+'.json',data:JSON.stringify(out,null,2)}); if(S.db&&S.db.markExported) S.db.markExported(); toast('Backup saved'); scheduleRender(); }
+  catch(e){ const c=e&&e.code; if(c==='declined') return; toast(c==='rate_limited'?'A save prompt is already open.':'Couldn’t export: try again.','err'); }
+}
+/* Import a backup file made by Export backup (here or on claude.ai). */
+let pendingImport=null;
+function pickImport(){ const inp=$('#import-file'); inp.value=''; inp.click(); }
+async function readImport(inp){
+  const f=inp.files&&inp.files[0]; if(!f) return;
+  const bad=()=>toast('That file isn’t a backup from this app.','err');
+  let obj; try{ obj=JSON.parse(await f.text()); }catch(e){ bad(); return; }
+  const cols=obj&&obj.collections;
+  const isMap=v=>v&&typeof v==='object'&&!Array.isArray(v);
+  if(!isMap(cols)||!COLS.some(c=>isMap(cols[c]))){ bad(); return; }
+  const clean={}; COLS.forEach(c=>{ const src=isMap(cols[c])?cols[c]:{}, o={}; Object.keys(src).forEach(id=>{ if(id&&isMap(src[id])){ const copy=Object.assign({},src[id]); delete copy.id; o[id]=copy; } }); clean[c]=o; });
+  if(!COLS.some(c=>S[c].length)){ await applyImport(clean,'replace'); return; }
+  pendingImport={clean,at:obj.exportedAt};
+  const n=c=>Object.keys(clean[c]).length, at=Date.parse(obj.exportedAt||'');
+  const rows=[['matches','Matches'],['leagues','Leagues'],['tournaments','Tournaments'],['decks','Decks'],['plans','Sideboard plans']];
+  openSheet(`<form id="import-form" novalidate>
+    ${sheetHead('Import backup')}
+    ${at?`<p class="hint">Backup made on ${esc(fmtStamp(at))}.</p>`:''}
+    <div class="tbl-wrap"><table><thead><tr><th><span class="sr">Data</span></th><th class="num">In the file</th><th class="num">On this device</th></tr></thead><tbody>${rows.map(([c,l])=>`<tr><td>${l}</td><td class="num">${n(c)}</td><td class="num">${S[c].length}</td></tr>`).join('')}</tbody></table></div>
+    <p class="hint"><strong>Add &amp; update</strong> keeps everything on this device and adds or updates what’s in the file. <strong>Replace everything</strong> makes this device an exact copy of the backup: anything not in the file is deleted.</p>
+    <p class="form-err" id="form-err" hidden></p>
+    <div class="sheet-actions"><button type="button" class="btn danger" data-act="import-replace" data-confirm data-confirm-label="Confirm: replace">Replace everything</button><span class="spacer"></span><button type="button" class="btn" data-act="close">Cancel</button><button type="button" class="btn primary" data-act="import-merge">Add &amp; update</button></div>
+  </form>`,{kind:'import'});
+}
+async function applyImport(clean,mode){
+  await need().importAll(clean,mode==='replace');
+  pendingImport=null; if(!sheet.hidden) closeSheet();
+  const n=Object.keys(clean.matches).length;
+  toast((mode==='replace'?'Backup restored: ':'Backup added: ')+plural(n,'match','matches'));
+}
+async function deleteDeck(id){ for(const p of S.plans.filter(x=>x.deckId===id)) await remove('plans',p.id); await remove('decks',id); if(S.f.deck===id) S.f.deck='all'; closeSheet(); toast('Deck deleted: the matches played stay'); }
+
+document.addEventListener('click',async e=>{
+  const t=e.target.closest('[data-act]'); if(!t) return;
+  if(t.hasAttribute('data-confirm')&&!t.dataset.armed){ e.preventDefault(); arm(t); return; }
+  const act=t.dataset.act, id=t.dataset.id;
+  try{
+    switch(act){
+      case 'close': closeSheet(); break;
+      case 'new-match': openMatch(null); break;
+      case 'edit-match': openMatch(id); break;
+      case 'new-match-league': { const l=leagueById(id); if(l) openMatch(null,{leagueId:l.id,deckId:l.deckId,format:l.format}); break; }
+      case 'g-res': case 'g-play': {
+        const i=+t.dataset.i, v=t.dataset.v, games=sheetCtx.F.games, g=games[i];
+        if(act==='g-res'){ g.r=g.r===v?null:v; const nx=games[i+1]; if(nx&&(nx.play===null||nx.auto)){ if(g.r==='W'||g.r==='L'){ nx.play=g.r==='L'; nx.auto=true; } else if(nx.auto){ nx.play=null; nx.auto=false; } } }
+        else { const val=v==='play'; g.play=g.play===val?null:val; g.auto=false; }
+        renderGames(); const b=$(`#mf-games [data-act="${act}"][data-i="${i}"][data-v="${v}"]`); if(b) b.focus(); break; }
+      case 'delete-match': await remove('matches',id); closeSheet(); toast('Match deleted'); break;
+      case 'new-deck': openDeck(null); break;
+      case 'edit-deck': openDeck(id); break;
+      case 'color': { const c=t.dataset.v, list=sheetCtx.colors, ix=list.indexOf(c); if(ix>=0) list.splice(ix,1); else list.push(c); t.setAttribute('aria-pressed',String(ix<0)); break; }
+      case 'restore-version': { const d=sheetCtx&&sheetCtx.d, v=d&&d.versions&&d.versions[+t.dataset.i]; if(v){ $('#df-main').value=v.main||''; $('#df-side').value=v.side||''; updateCounts(); $('#df-main').scrollIntoView({block:'center'}); toast('Version put back in the fields: press Save to keep it'); } break; }
+      case 'delete-deck': await deleteDeck(id); break;
+      case 'toggle-archived': S.showArchived=!S.showArchived; render(); break;
+      case 'goto-sb': S.sbDeck=id; location.hash='sideboard'; break;
+      case 'new-league': openLeague(); break;
+      case 'drop-league': await patch('leagues',id,{status:'dropped',updatedAt:Date.now()}); toast('Drop recorded'); break;
+      case 'undrop-league': await patch('leagues',id,{status:'active',updatedAt:Date.now()}); toast('League reopened'); break;
+      case 'delete-league': await deleteLeague(id); break;
+      case 'toggle-league': S.leagueOpen=S.leagueOpen===id?null:id; render(); break;
+      case 'new-tour': openTour(null); break;
+      case 'edit-tour': openTour(id); break;
+      case 'delete-tour': await deleteTour(id); break;
+      case 'toggle-tour': S.tourOpen=S.tourOpen===id?null:id; render(); break;
+      case 'new-match-tour': { const tt=tourById(id); if(tt) openMatch(null,{tournamentId:tt.id,deckId:tt.deckId,format:tt.format,date:tt.date}); break; }
+      case 'edit-plan': openPlan(t.dataset.deck,t.dataset.arch||''); break;
+      case 'delete-plan': await remove('plans',id); closeSheet(); toast('Plan deleted'); break;
+      case 'clear-filters': S.f={format:'all',deck:'all',period:'all'}; render(); break;
+      case 'more': S.listLimit+=100; render(); break;
+      case 'arch-all': S.archAll=!S.archAll; render(); break;
+      case 'del-examples': await deleteExamples(); break;
+      case 'export': await exportBackup(); break;
+      case 'import': pickImport(); break;
+      case 'import-merge': if(pendingImport) await applyImport(pendingImport.clean,'merge'); break;
+      case 'import-replace': if(pendingImport) await applyImport(pendingImport.clean,'replace'); break;
+    }
+  }catch(err){ if(sheetCtx&&$('#form-err')) formErr(errMsg(err)); else toast(errMsg(err),'err'); }
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.dataset&&t.dataset.filter){ S.f[t.dataset.filter]=t.value; S.listLimit=100; render(); return; }
+  switch(t.id){
+    case 'sb-deck': S.sbDeck=t.value; render(); break;
+    case 'mf-deck': { $('#mf-newdeck').hidden=t.value!=='__new'; if(t.value==='__new') $('#mf-newdeck').focus(); const d=deckById(t.value); if(d&&d.format&&!sheetCtx.m) $('#mf-format').value=d.format; syncLeagueField(); break; }
+    case 'mf-event': syncLeagueField(); break;
+    case 'mf-tour': $('#mf-newtour').hidden=t.value!=='__new'; if(t.value==='__new') $('#mf-newtour').focus(); break;
+    case 'lf-deck': { const d=deckById(t.value); if(d&&d.format) $('#lf-format').value=d.format; break; }
+    case 'tf-deck': { const d=deckById(t.value); if(d&&d.format) $('#tf-format').value=d.format; break; }
+    case 'import-file': readImport(t).catch(err=>toast(errMsg(err),'err')); break;
+  }
+});
+document.addEventListener('input',e=>{ if(['df-main','df-side','pf-in','pf-out'].includes(e.target.id)) updateCounts(); });
+document.addEventListener('submit',async e=>{
+  e.preventDefault();
+  const f=e.target, fn={'match-form':saveMatch,'deck-form':saveDeck,'league-form':saveLeague,'tour-form':saveTour,'plan-form':savePlan}[f.id]; if(!fn) return;
+  const btn=f.querySelector('button[type=submit]'); if(btn&&btn.disabled) return;
+  const err=$('#form-err'); if(err) err.hidden=true;
+  if(btn){ btn.disabled=true; btn.textContent='Saving…'; }
+  try{ await fn(); }catch(x){ formErr(errMsg(x)); }
+  finally{ if(btn&&btn.isConnected){ btn.disabled=false; btn.textContent='Save'; } }
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!sheet.hidden) closeSheet(); });
+backdrop.addEventListener('click',closeSheet);
+
+/* ---------- routing + boot ---------- */
+function readHash(){ const h=(location.hash||'').slice(1); S.view=VIEWS.includes(h)?h:'summary'; }
+window.addEventListener('hashchange',()=>{ readHash(); render(); window.scrollTo(0,0); });
+readHash(); render();
+
+function subscribe(col){
+  S.db.collection(col).onSnapshot(snap=>{
+    S[col]=snap.docs.map(d=>Object.assign({},d.data(),{id:d.id}));
+    if(!snap.metadata.fromCache) S.got[col]=true;
+    S.any=true;
+    if(COLS.every(c=>S.got[c])){ clearTimeout(slowTimer); S.slow=false; }
+    scheduleRender();
+  },err=>{ S.err=err; S.got[col]=true; S.any=true; clearTimeout(slowTimer); scheduleRender(); });
+}
+(async function boot(){
+  let db=null;
+  try{ db=window.claude&&typeof window.claude.use==='function'?await window.claude.use('db'):null; }catch(e){ db=null; }
+  if(!db){ S.status='nodb'; render(); return; }
+  S.db=db; S.status='ready';
+  slowTimer=setTimeout(()=>{ if(!COLS.every(c=>S.got[c])){ S.slow=true; if(!S.any) S.any=true; render(); } },10000);
+  COLS.forEach(subscribe);
+  try{ const dl=await window.claude.use('downloads'); if(dl){ S.dl=dl; scheduleRender(); } }catch(e){}
+  try{ const user=await window.claude.use('user'); if(user){ const own=await user.isOwner(); if(own===false){ S.notOwner=true; scheduleRender(); } } }catch(e){}
+})();
+})();
+</script>
+
+</body></html>
