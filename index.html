@@ -530,7 +530,7 @@ function noDbHTML(){ return '<section class="panel start"><h1>MTG Match Log</h1>
 /* Share of matches by opponent archetype: top 5 + Other, as a donut with a labelled legend. */
 function metaHTML(arch,total){
   if(!total) return '';
-  const known=arch.filter(a=>a.k!=='?'), top=known.slice(0,5), rest=total-top.reduce((n,a)=>n+a.ms.length,0);
+  const top=arch.slice(0,5), rest=total-top.reduce((n,a)=>n+a.ms.length,0);
   const parts=top.map((a,i)=>({name:a.name,n:a.ms.length,c:'var(--s'+(i+1)+')'}));
   if(rest>0) parts.push({name:'Other',n:rest,c:'var(--s-other)'});
   const pct=n=>Math.round(n/total*1000)/10, gap=parts.length>1?0.6:0; let at=0;
@@ -551,12 +551,12 @@ function viewSummary(){
   </section>`;
   const last=ms.slice(0,20).reverse();
   h+=`<section class="panel"><div class="panel-head"><h2>Recent form</h2><span class="muted sm">last ${last.length}, oldest to newest</span></div><div class="strip">${last.map(m=>{ const x=resultOf(m); return `<span class="sq ${x}" title="${esc(fmtDate(m.date)+' · vs '+(m.opp||'Unknown')+' · '+scoreOf(m))}">${x}</span>`; }).join('')}</div></section>`;
-  const arch=byArchetype(ms), shown=S.archAll?arch:arch.slice(0,8);
+  const arch=byArchetype(ms).filter(a=>a.k!=='?'&&a.k!=='unknown'), shown=S.archAll?arch:arch.slice(0,8); /* no 'Unknown' archetype in the stats */
   const dmap=new Map(); ms.forEach(m=>{ const k=m.deckId||'?'; if(!dmap.has(k)) dmap.set(k,[]); dmap.get(k).push(m); });
   const drows=[...dmap.entries()].map(([id,list])=>{ const d=deckById(id); return {label:(d?pips(d.colors)+' ':'')+esc(deckLabel(id,list[0].deckName)),r:rec(list)}; }).sort((a,b)=>b.r.n-a.r.n);
   h+=`<section class="panel"><h2>By deck</h2>${statTable('Deck',drows)}</section>
   <section class="panel"><h2>Vs archetypes</h2>${statTable('Archetype',shown.map(a=>({label:esc(a.name),title:esc(a.name),r:a.r})),true)}${arch.length>8?`<button type="button" class="btn ghost sm" data-act="arch-all" style="margin-top:8px">${S.archAll?'Show fewer':'Show all ('+arch.length+')'}</button>`:''}</section>
-  ${metaHTML(arch,ms.length)}`;
+  ${metaHTML(arch,arch.reduce((n,a)=>n+a.ms.length,0))}`;
   return h;
 }
 
