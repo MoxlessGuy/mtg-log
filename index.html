@@ -30,7 +30,7 @@
   --draw:#946000; --draw-soft:#f4e8cd; --on-draw:#ffffff;
   --mana-w:#f3eac4; --mana-u:#2f73cf; --mana-b:#3a3540; --mana-r:#d4442f; --mana-g:#2a8a52; --mana-ring:rgba(0,0,0,.18);
   --scrim:rgba(14,20,30,.38); --shadow:0 18px 48px rgba(14,20,30,.18);
-  --s1:#257de0; --s2:#f47230; --s3:#00b894; --s4:#f2a600; --s5:#ee7fac; --s-other:#b9c1cd;
+  --s1:#257de0; --s2:#f47230; --s3:#00b894; --s4:#f2a600; --s5:#ee7fac; --s6:#008a17; --s7:#6a4ce2; --s8:#ec4647; --s9:#1a4f9c; --s10:#a0662a; --s11:#7fc8f8; --s12:#9b2f8a; --s13:#8ea31a; --s14:#f7a58a; --s15:#0b7a75; --s16:#c9a0f0; --s17:#5d6b7d; --s18:#e0c040; --s-other:#d3d9e2;
   --font-display:"Archivo","Segoe UI",system-ui,sans-serif;
   --font-body:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
   --font-mono:"JetBrains Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
@@ -44,7 +44,7 @@
     --draw:#e8b84f; --draw-soft:#362b13; --on-draw:#1d1606;
     --mana-w:#e8deb2; --mana-u:#4b8be2; --mana-b:#5a5461; --mana-r:#e25b46; --mana-g:#3ba267; --mana-ring:rgba(255,255,255,.22);
     --scrim:rgba(0,0,0,.58); --shadow:0 18px 48px rgba(0,0,0,.55);
-    --s1:#338ced; --s2:#e76624; --s3:#00a888; --s4:#d28e05; --s5:#e24d8b; --s-other:#4f5a6a;
+    --s1:#338ced; --s2:#e76624; --s3:#00a888; --s4:#d28e05; --s5:#e24d8b; --s6:#0aac23; --s7:#9887ef; --s8:#eb6263; --s9:#5b86d6; --s10:#b9814a; --s11:#7fc8f8; --s12:#c157b0; --s13:#9fb52a; --s14:#f2a08a; --s15:#1fa39c; --s16:#c9a0f0; --s17:#8a97a8; --s18:#e0c040; --s-other:#3a4452;
     color-scheme:dark;
   }
 }
@@ -56,7 +56,7 @@
   --draw:#e8b84f; --draw-soft:#362b13; --on-draw:#1d1606;
   --mana-w:#e8deb2; --mana-u:#4b8be2; --mana-b:#5a5461; --mana-r:#e25b46; --mana-g:#3ba267; --mana-ring:rgba(255,255,255,.22);
   --scrim:rgba(0,0,0,.58); --shadow:0 18px 48px rgba(0,0,0,.55);
-  --s1:#338ced; --s2:#e76624; --s3:#00a888; --s4:#d28e05; --s5:#e24d8b; --s-other:#4f5a6a;
+  --s1:#338ced; --s2:#e76624; --s3:#00a888; --s4:#d28e05; --s5:#e24d8b; --s6:#0aac23; --s7:#9887ef; --s8:#eb6263; --s9:#5b86d6; --s10:#b9814a; --s11:#7fc8f8; --s12:#c157b0; --s13:#9fb52a; --s14:#f2a08a; --s15:#1fa39c; --s16:#c9a0f0; --s17:#8a97a8; --s18:#e0c040; --s-other:#3a4452;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -179,8 +179,8 @@ table.compact th,table.compact td{padding-inline:6px}
 .donut{width:136px;height:136px;flex:0 0 auto;transform:rotate(-90deg)}
 .donut circle{fill:none;stroke-width:7}
 .donut .trk{stroke:var(--surface-2)}
-.mleg{list-style:none;margin:0;padding:0;flex:1 1 180px;min-width:0;display:flex;flex-direction:column;gap:7px}
-.mleg li{display:grid;grid-template-columns:12px minmax(0,1fr) auto 44px;gap:8px;align-items:center;font-size:14px}
+.mleg{list-style:none;margin:0;padding:0;flex:1 1 180px;min-width:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:7px 18px}
+.mleg li{display:grid;grid-template-columns:12px minmax(0,1fr) 52px;gap:8px;align-items:center;font-size:14px}
 .mleg .sw{width:12px;height:12px;border-radius:3px}
 .mleg .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mleg .ct{color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums}
@@ -258,7 +258,7 @@ pre{margin:0;font-family:var(--font-mono);font-size:12.5px;line-height:1.55;whit
 
 /* Sheet */
 .sheet-backdrop{position:fixed;inset:0;background:var(--scrim);z-index:40}
-.sheet{position:fixed;top:0;right:0;bottom:0;width:min(580px,100%);z-index:41;background:var(--surface);border-left:1px solid var(--line);box-shadow:var(--shadow);overflow-y:auto;overscroll-behavior:contain;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-right:env(safe-area-inset-right,0px)}
+.sheet{position:fixed;top:0;right:0;bottom:0;width:min(580px,100%);z-index:41;background:var(--surface);border-left:1px solid var(--line);box-shadow:var(--shadow);overflow-y:auto;overflow-x:hidden;touch-action:pan-y;overscroll-behavior:contain;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-right:env(safe-area-inset-right,0px)}
 .sheet-inner{padding:18px 22px 28px}
 .sheet form{display:flex;flex-direction:column;gap:16px}
 .sheet-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
@@ -272,6 +272,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);outline:none;
 textarea{resize:vertical;font-family:var(--font-mono);font-size:13px;line-height:1.55}
 textarea.prose{font-family:var(--font-body);font-size:14px}
 .row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+/* iOS draws date inputs wider than their box unless their native look is reset */
+input[type=date]{display:block;-webkit-appearance:none;appearance:none;max-width:100%;text-align:left}
+input[type=date]::-webkit-date-and-time-value{text-align:left}
 @media (max-width:440px){ .row2{grid-template-columns:1fr} }
 .games{display:flex;flex-direction:column;gap:8px}
 .game{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px}
@@ -413,7 +416,8 @@ if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)) window.add
 document.documentElement.lang='en';
 
 const FORMATS=['Modern','Pioneer','Standard','Legacy','Vintage','Pauper','Premodern','Limited','Other'];
-const EVENTS=[['league','League'],['endstep','Endstep'],['tournament','Paper/webcam tournament'],['challenge','Challenge'],['prelim','Preliminary'],['qualifier','Qualifier / RCQ'],['showcase','Showcase'],['casual','Casual'],['other','Other']];
+const EVENT_PICK=['league','endstep','tournament']; /* the only events offered when logging a match */
+const EVENTS=[['league','League'],['endstep','Endstep'],['tournament','Paper'],['challenge','Challenge'],['prelim','Preliminary'],['qualifier','Qualifier / RCQ'],['showcase','Showcase'],['casual','Casual'],['other','Other']];
 const EVENT_LABEL=Object.fromEntries(EVENTS);
 const VIEWS=['summary','matches','leagues','tournaments','decks','sideboard'];
 const COLORS=['W','U','B','R','G'];
@@ -467,6 +471,12 @@ function toursFiltered(){ const f=S.f, from=periodFrom(); return S.tournaments.f
 function deckLabel(id,fallback){ const d=deckById(id); return d?d.name:(fallback||'Deleted deck'); }
 function activeDecks(includeId){ return S.decks.filter(d=>!d.archived||d.id===includeId).sort(byName); }
 function byArchetype(list){ const map=new Map(); list.forEach(m=>{ const k=key(m.opp)||'?'; if(!map.has(k)) map.set(k,{k,name:String(m.opp||'').trim()||'Unknown',ms:[]}); map.get(k).ms.push(m); }); return [...map.values()].map(x=>Object.assign(x,{r:rec(x.ms)})).sort((a,b)=>b.ms.length-a.ms.length||a.name.localeCompare(b.name,LOCALE)); }
+/* Dropdown of the archetypes already logged (A–Z), plus a way to type a new one. */
+function archSelect(cur){
+  const names=archetypeNames().filter(n=>key(n)!=='unknown').sort((a,b)=>a.localeCompare(b,LOCALE,{sensitivity:'base'})), k=key(cur);
+  const hit=names.find(n=>key(n)===k);
+  return `<select id="mf-opp-sel"><option value=""${!k?' selected':''}>Choose…</option>${names.map(n=>`<option value="${esc(n)}"${hit===n?' selected':''}>${esc(n)}</option>`).join('')}<option value="__new">＋ New archetype…</option></select>`;
+}
 function archetypeNames(){ const seen=new Map(); sortedMatches().forEach(m=>{ const k=key(m.opp); if(k&&!seen.has(k)) seen.set(k,String(m.opp).trim()); }); S.plans.forEach(p=>{ const k=key(p.archetype); if(k&&!seen.has(k)) seen.set(k,String(p.archetype).trim()); }); return [...seen.values()]; }
 function leagueMatches(id){ return S.matches.filter(m=>m.leagueId===id).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))||(a.createdAt||0)-(b.createdAt||0)); }
 function leagueState(l){ const ms=leagueMatches(l.id), r=rec(ms), size=Math.max(1,parseInt(l.size,10)||5); const st=l.status==='dropped'?'dropped':ms.length>=size?'done':'active'; return {l,ms,r,size,st,trophy:st==='done'&&r.L===0&&r.D===0}; }
@@ -530,14 +540,14 @@ function noDbHTML(){ return '<section class="panel start"><h1>MTG Match Log</h1>
 /* Share of matches by opponent archetype: top 5 + Other, as a donut with a labelled legend. */
 function metaHTML(arch,total){
   if(!total) return '';
-  const top=arch.slice(0,5), rest=total-top.reduce((n,a)=>n+a.ms.length,0);
+  const top=arch.filter(a=>a.ms.length>=5).slice(0,18), rest=total-top.reduce((n,a)=>n+a.ms.length,0);
   const parts=top.map((a,i)=>({name:a.name,n:a.ms.length,c:'var(--s'+(i+1)+')'}));
   if(rest>0) parts.push({name:'Other',n:rest,c:'var(--s-other)'});
-  const pct=n=>Math.round(n/total*1000)/10, gap=parts.length>1?0.6:0; let at=0;
+  const pct=n=>(n/total*100).toFixed(1), gap=parts.length>1?0.6:0; let at=0;
   const segs=parts.map(p=>{ const len=p.n/total*100, d=Math.max(len-gap,0.01); const el=`<circle r="15.915" cx="21" cy="21" stroke="${p.c}" stroke-dasharray="${d} ${100-d}" stroke-dashoffset="${-at}"><title>${esc(p.name)}: ${p.n} (${pct(p.n)}%)</title></circle>`; at+=len; return el; }).join('');
   return `<section class="panel"><div class="panel-head"><h2>Meta faced</h2><span class="muted sm">share of ${plural(total,'match','matches')}</span></div>
     <div class="meta"><svg class="donut" viewBox="0 0 42 42" role="img" aria-label="Share of matches by opponent archetype"><circle class="trk" r="15.915" cx="21" cy="21"/>${segs}</svg>
-    <ul class="mleg">${parts.map(p=>`<li><span class="sw" style="background:${p.c}"></span><span class="nm" title="${esc(p.name)}">${esc(p.name)}</span><span class="ct">${p.n}</span><span class="pc">${pct(p.n)}%</span></li>`).join('')}</ul></div></section>`;
+    <ul class="mleg">${parts.map(p=>`<li><span class="sw" style="background:${p.c}"></span><span class="nm" title="${esc(p.name)}">${esc(p.name)}</span><span class="pc">${pct(p.n)}%</span></li>`).join('')}</ul></div></section>`;
 }
 function viewSummary(){
   if(!S.matches.length) return emptyStart();
@@ -553,8 +563,8 @@ function viewSummary(){
   h+=`<section class="panel"><div class="panel-head"><h2>Recent form</h2><span class="muted sm">last ${last.length}, oldest to newest</span></div><div class="strip">${last.map(m=>{ const x=resultOf(m); return `<span class="sq ${x}" title="${esc(fmtDate(m.date)+' · vs '+(m.opp||'Unknown')+' · '+scoreOf(m))}">${x}</span>`; }).join('')}</div></section>`;
   const arch=byArchetype(ms).filter(a=>a.k!=='?'&&a.k!=='unknown'), shown=S.archAll?arch:arch.slice(0,8); /* no 'Unknown' archetype in the stats */
   const dmap=new Map(); ms.forEach(m=>{ const k=m.deckId||'?'; if(!dmap.has(k)) dmap.set(k,[]); dmap.get(k).push(m); });
-  const drows=[...dmap.entries()].map(([id,list])=>{ const d=deckById(id); return {label:(d?pips(d.colors)+' ':'')+esc(deckLabel(id,list[0].deckName)),r:rec(list)}; }).sort((a,b)=>b.r.n-a.r.n);
-  h+=`<section class="panel"><h2>By deck</h2>${statTable('Deck',drows)}</section>
+  const drows=[...dmap.entries()].map(([id,list])=>{ const d=deckById(id); return {label:(d?pips(d.colors)+' ':'')+esc(deckLabel(id,list[0].deckName)),title:esc(deckLabel(id,list[0].deckName)),r:rec(list)}; }).sort((a,b)=>b.r.n-a.r.n);
+  h+=`<section class="panel"><h2>By deck</h2>${statTable('Deck',drows,true)}</section>
   <section class="panel"><h2>Vs archetypes</h2>${statTable('Archetype',shown.map(a=>({label:esc(a.name),title:esc(a.name),r:a.r})),true)}${arch.length>8?`<button type="button" class="btn ghost sm" data-act="arch-all" style="margin-top:8px">${S.archAll?'Show fewer':'Show all ('+arch.length+')'}</button>`:''}</section>
   ${metaHTML(arch,arch.reduce((n,a)=>n+a.ms.length,0))}`;
   return h;
@@ -716,7 +726,7 @@ function openMatch(id,preset){
   if(!m&&!deckId){ const ld=last&&deckById(last.deckId); deckId=ld&&!ld.archived?ld.id:(decks[0]?decks[0].id:''); }
   const d=deckById(deckId);
   const format=m?(m.format||'Modern'):(preset.format||(d&&d.format)||(last&&last.format)||'Modern');
-  const event=m?(m.event||'other'):(preset.leagueId?'league':preset.tournamentId?'tournament':((last&&last.event)||'league'));
+  const event=m?(m.event||'other'):(preset.leagueId?'league':preset.tournamentId?'tournament':(last&&EVENT_PICK.includes(last.event)?last.event:'league'));
   const F={games:[0,1,2].map(i=>{ const g=m?gamesOf(m)[i]:null; return g?{r:g.r,play:g.play===true?true:g.play===false?false:null,auto:false}:{r:null,play:null,auto:false}; })};
   const html=`<form id="match-form" novalidate>
     ${sheetHead(m?'Edit match':'New match')}
@@ -727,15 +737,12 @@ function openMatch(id,preset){
     <div class="field"><label for="mf-deck">Your deck</label><select id="mf-deck">${deckOptions(deckId,m&&m.deckName)}<option value="__new"${!deckId?' selected':''}>＋ New deck…</option></select>
       <input type="text" id="mf-newdeck" placeholder="New deck name" autocomplete="off" aria-label="New deck name" hidden></div>
     <div class="row2">
-      <div class="field"><label for="mf-event">Event</label><select id="mf-event">${EVENTS.map(([k,l])=>`<option value="${k}"${k===event?' selected':''}>${l}</option>`).join('')}</select></div>
+      <div class="field"><label for="mf-event">Event</label><select id="mf-event">${EVENTS.filter(([k])=>EVENT_PICK.includes(k)||k===event).map(([k,l])=>`<option value="${k}"${k===event?' selected':''}>${l}</option>`).join('')}</select></div>
       <div class="field" id="mf-league-field"><label for="mf-league">League</label><select id="mf-league"></select></div>
       <div class="field" id="mf-tour-field" hidden><label for="mf-tour">Tournament</label><select id="mf-tour"></select><input type="text" id="mf-newtour" placeholder="Tournament name" autocomplete="off" aria-label="New tournament name" hidden></div>
     </div>
-    <div class="row2">
-      <div class="field"><label for="mf-opp">Opponent archetype</label><input type="text" id="mf-opp" list="arch-list" value="${esc(m?m.opp:'')}" placeholder="e.g. UW Landstill" autocomplete="off"></div>
-      <div class="field"><label for="mf-oppname">Opponent <span class="opt">optional</span></label><input type="text" id="mf-oppname" value="${esc(m?m.oppName:'')}" placeholder="MTGO username" autocomplete="off"></div>
-    </div>
-    <datalist id="arch-list">${archetypeNames().map(n=>`<option value="${esc(n)}"></option>`).join('')}</datalist>
+    <div class="field"><label for="mf-opp-sel">Opponent archetype</label>${archSelect(m?m.opp:'')}
+      <input type="text" id="mf-opp" value="" placeholder="New archetype name" autocomplete="off" aria-label="New archetype name" hidden></div>
     <fieldset class="field"><legend>Games</legend><div class="games" id="mf-games"></div><p class="hint" id="mf-sum"></p></fieldset>
     <div class="field"><label for="mf-notes">Notes</label><textarea id="mf-notes" class="prose" rows="3" placeholder="Key cards, mistakes, what to change…">${esc(m?m.notes:'')}</textarea></div>
     ${actions(m?`<button type="button" class="btn danger" data-act="delete-match" data-id="${esc(m.id)}" data-confirm data-confirm-label="Confirm delete">Delete</button>`:'')}
@@ -785,6 +792,7 @@ async function saveMatch(){
   let deckId=$('#mf-deck').value, deckName;
   const newDeck=deckId==='__new'||!deckId, newDeckName=$('#mf-newdeck').value.trim();
   if(newDeck&&!newDeckName) return formErr('Enter the new deck’s name.');
+  if($('#mf-opp-sel').value==='__new'&&!$('#mf-opp').value.trim()) return formErr('Enter the new archetype’s name.');
   let tournamentId=event==='tournament'?$('#mf-tour').value:null; const newTourName=$('#mf-newtour').value.trim();
   if(event==='tournament'&&(!tournamentId||tournamentId==='__new')&&!newTourName) return formErr('Enter the tournament’s name.');
   if(newDeck){
@@ -797,7 +805,7 @@ async function saveMatch(){
     if(leagueId==='__new'){ leagueId=uid('l'); await save('leagues',leagueId,{deckId,deckName,format,size:5,startedAt:date,status:'active',createdAt:now,updatedAt:now}); }
   }
   if(event==='tournament'&&(!tournamentId||tournamentId==='__new')){ tournamentId=uid('t'); await save('tournaments',tournamentId,{name:newTourName,date,format,deckId,deckName,placement:'',notes:'',createdAt:now,updatedAt:now}); }
-  const data={date,format,deckId,deckName,event,leagueId,tournamentId,opp:$('#mf-opp').value.trim(),oppName:$('#mf-oppname').value.trim(),games,result:resultOf({games}),notes:$('#mf-notes').value.trim(),createdAt:m?(m.createdAt||now):now,updatedAt:now};
+  const data={date,format,deckId,deckName,event,leagueId,tournamentId,opp:($('#mf-opp-sel').value==='__new'?$('#mf-opp').value.trim():$('#mf-opp-sel').value),oppName:m?(m.oppName||''):'',games,result:resultOf({games}),notes:$('#mf-notes').value.trim(),createdAt:m?(m.createdAt||now):now,updatedAt:now};
   if(m&&m.orderUnknown&&games.map(g=>g.r).join('')===gamesOf(m).map(g=>g.r).join('')) data.orderUnknown=true;
   if(m&&m.example) data.example=true;
   await save('matches',ctx.id||uid('m'),data);
@@ -1037,6 +1045,7 @@ document.addEventListener('change',e=>{
   if(t.dataset&&t.dataset.filter){ S.f[t.dataset.filter]=t.value; S.listLimit=100; render(); return; }
   switch(t.id){
     case 'sb-deck': S.sbDeck=t.value; render(); break;
+    case 'mf-opp-sel': { $('#mf-opp').hidden=t.value!=='__new'; if(t.value==='__new') $('#mf-opp').focus(); break; }
     case 'mf-deck': { $('#mf-newdeck').hidden=t.value!=='__new'; if(t.value==='__new') $('#mf-newdeck').focus(); const d=deckById(t.value); if(d&&d.format&&!sheetCtx.m) $('#mf-format').value=d.format; syncLeagueField(); break; }
     case 'mf-event': syncLeagueField(); break;
     case 'mf-tour': $('#mf-newtour').hidden=t.value!=='__new'; if(t.value==='__new') $('#mf-newtour').focus(); break;
