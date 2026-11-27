@@ -173,10 +173,6 @@ table.compact{table-layout:fixed}
 table.compact td.name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal}
 table.compact .c-m{width:36px} table.compact .c-rec{width:66px} table.compact .c-wr{width:52px}
 table.compact th,table.compact td{padding-inline:6px}
-tr.go{cursor:pointer} tr.go:hover td,tr.go:focus-visible td{background:var(--surface-2)} tr.go td.name{color:var(--accent);font-weight:500}
-.fchip{display:inline-flex;align-items:center;gap:8px;padding:6px 6px 6px 12px;border-radius:999px;background:var(--accent-soft);color:var(--fg);font-size:14px;font-weight:600;max-width:100%}
-.fchip .muted{font-weight:500}
-.fchip button{font:inherit;font-size:16px;line-height:1;width:26px;height:26px;border-radius:50%;border:0;background:transparent;color:var(--accent);cursor:pointer}
 
 /* Meta share donut */
 .meta{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
@@ -193,17 +189,16 @@ tr.go{cursor:pointer} tr.go:hover td,tr.go:focus-visible td{background:var(--sur
 /* Match list */
 .legend{margin-top:-6px}
 .mlist{display:flex;flex-direction:column}
-.mrow{display:grid;grid-template-columns:120px 96px minmax(0,1fr) auto;grid-template-areas:"res date main games";gap:4px 14px;align-items:center;width:100%;padding:11px 16px;border:0;border-bottom:1px solid var(--line);background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.mrow{display:flex;flex-direction:column;gap:3px;width:100%;padding:10px 16px;border:0;border-bottom:1px solid var(--line);background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer;min-width:0}
 .mrow:last-child{border-bottom:0}
 .mrow:hover{background:var(--surface-2)}
-.m-res{grid-area:res;display:flex;align-items:center;gap:8px}
-.score{font-family:var(--font-mono);font-weight:600;font-size:13px}
-.m-date{grid-area:date;color:var(--muted);font-size:13px}
-.m-main{grid-area:main;display:flex;flex-direction:column;min-width:0}
-.m-opp{font-weight:600;overflow-wrap:anywhere}
-.m-meta{color:var(--muted);font-size:12.5px;overflow-wrap:anywhere}
-.m-games{grid-area:games;display:flex;gap:4px;flex-wrap:wrap}
-@media (max-width:640px){ .mrow{grid-template-columns:auto minmax(0,1fr);grid-template-areas:"res date" "main main" "games games"} .m-date{justify-self:end} }
+.m-line{display:flex;align-items:center;gap:10px;min-width:0}
+.m-line .sq{width:22px;height:22px;font-size:11px;flex:0 0 auto}
+.m-line .score{flex:0 0 auto;width:26px}
+.m-opp{flex:1 1 auto;min-width:0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-ev{flex:0 1 auto;max-width:34%;color:var(--muted);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-date{flex:0 0 auto;color:var(--muted);font-size:12.5px;white-space:nowrap;font-variant-numeric:tabular-nums;min-width:44px;text-align:right}
+.m-sub{color:var(--muted);font-size:12px;padding-left:68px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 
 /* Leagues */
 .lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px}
@@ -220,9 +215,12 @@ tr.go{cursor:pointer} tr.go:hover td,tr.go:focus-visible td{background:var(--sur
 .dbar i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:4px}
 .llist{display:flex;flex-direction:column}
 .lrow{border-top:1px solid var(--line)}
-.lrow-btn{display:grid;grid-template-columns:64px minmax(0,1fr) auto 16px;gap:12px;align-items:center;width:100%;padding:12px 16px;border:0;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.lrow-btn{display:grid;grid-template-columns:54px minmax(0,1fr) auto 16px;gap:10px;align-items:center;width:100%;padding:10px 16px;border:0;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
 .lrow-btn:hover{background:var(--surface-2)}
 .lrow-btn .rec{font-size:16px}
+.lrow-btn .one{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px}
+.lrow-btn .one strong{overflow:hidden;text-overflow:ellipsis;font-weight:600}
+.lrow-btn .one .muted{font-size:12.5px;flex:0 0 auto}
 .lrow-btn .min0{display:flex;flex-direction:column}
 .chev{color:var(--muted);transition:transform .15s}
 .lrow.open .chev{transform:rotate(180deg)}
@@ -431,9 +429,9 @@ const GAME_LABEL={W:'Won',L:'Lost',D:'Drawn'};
 const COLS=['matches','decks','leagues','tournaments','plans'];
 const LOCALE='en-GB';
 
-const S={oppFilter:'',db:null,status:'loading',slow:false,err:null,notOwner:false,any:false,
+const S={db:null,status:'loading',slow:false,err:null,notOwner:false,any:false,
   matches:[],decks:[],leagues:[],tournaments:[],plans:[],got:{matches:false,decks:false,leagues:false,tournaments:false,plans:false},
-  view:'summary',f:{format:'all',deck:'all',period:'all'},listLimit:100,showArchived:false,sbDeck:null,leagueOpen:null,tourOpen:null,archAll:false};
+  view:'summary',f:{format:'all',deck:'all',period:'all',opp:'all'},lgAll:false,listLimit:100,showArchived:false,sbDeck:null,leagueOpen:null,tourOpen:null,archAll:false};
 let sheetCtx=null, lastFocus=null, renderTimer=null, slowTimer=null;
 
 /* ---------- helpers ---------- */
@@ -465,6 +463,8 @@ const recTxt=r=>r.W+'–'+r.L+(r.D?'–'+r.D:'');
 function sortedMatches(){ return S.matches.slice().sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||(b.createdAt||0)-(a.createdAt||0)); }
 function periodFrom(){ const p=S.f.period; if(p==='all') return null; const d=new Date(); if(p==='30') d.setDate(d.getDate()-30); else if(p==='90') d.setDate(d.getDate()-90); else d.setMonth(0,1); return isoOf(d); }
 function filtered(){ const f=S.f, from=periodFrom(); return sortedMatches().filter(m=>(f.format==='all'||m.format===f.format)&&(f.deck==='all'||m.deckId===f.deck)&&(!from||String(m.date||'')>=from)); }
+/* Matches tab: no period filter, an archetype filter instead. */
+function filteredMatchesTab(){ const f=S.f, ao=f.opp==='all'?'':key(f.opp); return sortedMatches().filter(m=>(f.format==='all'||m.format===f.format)&&(f.deck==='all'||m.deckId===f.deck)&&(!ao||key(m.opp)===ao)); }
 const deckById=id=>id?S.decks.find(d=>d.id===id)||null:null;
 const leagueById=id=>id?S.leagues.find(l=>l.id===id)||null:null;
 const tourById=id=>id?S.tournaments.find(t=>t.id===id)||null:null;
@@ -511,17 +511,19 @@ const bar=wr=>`<span class="wrbar" aria-hidden="true"><i style="width:${wr==null
 const tile=(lbl,val,sub,cls)=>`<div class="tile"><span class="lbl">${lbl}</span><span class="val ${cls||''}">${val}</span><span class="sub">${sub||''}</span></div>`;
 function splitRow(label,r,hint){ return `<div class="srow"><span>${label}${hint?` <span class="muted sm">${hint}</span>`:''}</span><span class="num">${r.W}–${r.L}</span><span class="num ${wrCls(r.wr)}">${pctTxt(r.wr)}</span>${bar(r.wr)}</div>`; }
 function statTable(first,rows,compact){ if(!rows.length) return '<p class="hint">Nothing to show yet.</p>';
-  if(compact) return `<div class="tbl-wrap"><table class="compact"><colgroup><col><col class="c-m"><col class="c-rec"><col class="c-wr"></colgroup><thead><tr><th>${first}</th><th class="num">M</th><th class="num">Record</th><th class="num">WR</th></tr></thead><tbody>${rows.map(x=>`<tr${x.act?` class="go" data-act="${x.act}" data-arch="${x.arg}" tabindex="0" role="link"`:''}><td class="name" title="${x.title||''}">${x.label}</td><td class="num">${x.r.n}</td><td class="num">${recTxt(x.r)}</td><td class="num ${wrCls(x.r.wr)}">${pctTxt(x.r.wr)}</td></tr>`).join('')}</tbody></table></div>`;
+  if(compact) return `<div class="tbl-wrap"><table class="compact"><colgroup><col><col class="c-m"><col class="c-rec"><col class="c-wr"></colgroup><thead><tr><th>${first}</th><th class="num">M</th><th class="num">Record</th><th class="num">WR</th></tr></thead><tbody>${rows.map(x=>`<tr><td class="name" title="${x.title||''}">${x.label}</td><td class="num">${x.r.n}</td><td class="num">${recTxt(x.r)}</td><td class="num ${wrCls(x.r.wr)}">${pctTxt(x.r.wr)}</td></tr>`).join('')}</tbody></table></div>`;
   return `<div class="tbl-wrap"><table><thead><tr><th>${first}</th><th class="num">M</th><th class="num">Record</th><th class="num">WR</th><th class="barcol"><span class="sr">Win rate bar</span></th></tr></thead><tbody>${rows.map(x=>`<tr><td class="name">${x.label}</td><td class="num">${x.r.n}</td><td class="num">${recTxt(x.r)}</td><td class="num ${wrCls(x.r.wr)}">${pctTxt(x.r.wr)}</td><td class="barcol">${bar(x.r.wr)}</td></tr>`).join('')}</tbody></table></div>`; }
 
-function filtersHTML(){
+function filtersHTML(mode){
   const used=new Set(S.matches.map(m=>m.format).concat(S.leagues.map(l=>l.format)).concat(S.tournaments.map(t=>t.format)).filter(Boolean));
   const fmts=[...new Set(FORMATS.concat([...used]))].filter(f=>used.has(f)||S.f.format===f);
-  const on=S.f.format!=='all'||S.f.deck!=='all'||S.f.period!=='all';
+  const forM=mode==='matches', on=S.f.format!=='all'||S.f.deck!=='all'||(forM?S.f.opp!=='all':S.f.period!=='all');
+  const archs=forM?archetypeNames().filter(n=>key(n)!=='unknown').sort((a,b)=>a.localeCompare(b,LOCALE,{sensitivity:'base'})):[];
   return `<div class="filters" role="group" aria-label="Filters"><div class="flt-sel">
     <select id="flt-format" data-filter="format" aria-label="Format"><option value="all">All formats</option>${fmts.map(f=>`<option value="${esc(f)}"${S.f.format===f?' selected':''}>${esc(f)}</option>`).join('')}</select>
     <select id="flt-deck" data-filter="deck" aria-label="Deck"><option value="all">All decks</option>${S.decks.slice().sort(byName).map(d=>`<option value="${esc(d.id)}"${S.f.deck===d.id?' selected':''}>${esc(d.name)}${d.archived?' (archived)':''}</option>`).join('')}</select>
-    <select id="flt-period" data-filter="period" aria-label="Period">${[['all','All time'],['30','Last 30 days'],['90','Last 90 days'],['year','This year']].map(([v,l])=>`<option value="${v}"${S.f.period===v?' selected':''}>${l}</option>`).join('')}</select></div>
+    ${forM?`<select id="flt-opp" data-filter="opp" aria-label="Archetype"><option value="all">All archetypes</option>${archs.map(n=>`<option value="${esc(n)}"${key(S.f.opp)===key(n)?' selected':''}>${esc(n)}</option>`).join('')}</select>`
+    :`<select id="flt-period" data-filter="period" aria-label="Period">${[['all','All time'],['30','Last 30 days'],['90','Last 90 days'],['year','This year']].map(([v,l])=>`<option value="${v}"${S.f.period===v?' selected':''}>${l}</option>`).join('')}</select>`}</div>
     ${on?'<button type="button" class="btn ghost sm" data-act="clear-filters">Clear filters</button>':''}
   </div>`;
 }
@@ -569,33 +571,32 @@ function viewSummary(){
   const dmap=new Map(); ms.forEach(m=>{ const k=m.deckId||'?'; if(!dmap.has(k)) dmap.set(k,[]); dmap.get(k).push(m); });
   const drows=[...dmap.entries()].map(([id,list])=>{ const d=deckById(id); return {label:(d?pips(d.colors)+' ':'')+esc(deckLabel(id,list[0].deckName)),title:esc(deckLabel(id,list[0].deckName)),r:rec(list)}; }).sort((a,b)=>b.r.n-a.r.n);
   h+=`<section class="panel"><h2>By deck</h2>${statTable('Deck',drows,true)}</section>
-  <section class="panel"><div class="panel-head"><h2>Archetypes</h2><span class="muted sm">tap one to see its matches</span></div>${statTable('Archetype',shown.map(a=>({label:esc(a.name),title:esc(a.name),r:a.r,act:'goto-arch',arg:esc(a.name)})),true)}${arch.length>8?`<button type="button" class="btn ghost sm" data-act="arch-all" style="margin-top:8px">${S.archAll?'Show fewer':'Show all ('+arch.length+')'}</button>`:''}</section>
+  <section class="panel"><h2>Archetypes</h2>${statTable('Archetype',shown.map(a=>({label:esc(a.name),title:esc(a.name),r:a.r})),true)}${arch.length>8?`<button type="button" class="btn ghost sm" data-act="arch-all" style="margin-top:8px">${S.archAll?'Show fewer':'Show all ('+arch.length+')'}</button>`:''}</section>
   ${metaHTML(arch,arch.reduce((n,a)=>n+a.ms.length,0))}`;
   return h;
 }
 
-function rowHTML(m){
+/* Deck and format are only worth showing once you log more than one of them. */
+function multiDeck(){ return new Set(S.matches.map(m=>m.deckId||m.deckName)).size>1||new Set(S.matches.map(m=>m.format)).size>1; }
+function shortDate(iso){ if(!iso||!/^\d{4}-\d{2}-\d{2}/.test(iso)) return '—'; const p=iso.slice(0,10).split('-').map(Number), d=new Date(p[0],p[1]-1,p[2]); return d.toLocaleDateString(LOCALE,p[0]===new Date().getFullYear()?{day:'numeric',month:'short'}:{day:'numeric',month:'short',year:'2-digit'}); }
+/* One line per match: result, score, archetype, event, date. Notes (and deck, if you play several) go underneath in small type. inEvent hides the event when the row sits inside its league/tournament. */
+function rowHTML(m,inEvent){
   const r=resultOf(m), d=deckById(m.deckId), lg=leagueById(m.leagueId), tr=tourById(m.tournamentId);
-  let lgTxt=''; if(lg){ const st=leagueState(lg); lgTxt=` <span class="muted">(${st.ms.indexOf(m)+1}/${st.size})</span>`; }
-  const evTxt=tr?esc(tr.name||'Tournament'):esc(EVENT_LABEL[m.event]||m.event||'')+lgTxt;
-  const gs=m.orderUnknown?'':gamesOf(m).map((g,i)=>`<span class="gp ${g.r}" title="G${i+1} ${GAME_LABEL[g.r].toLowerCase()}${g.play===true?', on the play':g.play===false?', on the draw':''}">${g.play===true?'OTP':g.play===false?'OTD':'G'+(i+1)}</span>`).join('');
-  const meta=[(d?pips(d.colors)+' ':'')+esc(deckLabel(m.deckId,m.deckName)), esc(m.format||''), evTxt, m.notes?`<span title="${esc(m.notes)}">${esc(m.notes.length>40?m.notes.slice(0,40)+'…':m.notes)}</span>`:''].filter(Boolean).join(' · ');
+  let ev=''; if(!inEvent){ if(tr) ev=tr.name||'Paper'; else if(lg){ const st=leagueState(lg); ev='League '+(st.ms.indexOf(m)+1)+'/'+st.size; } else ev=EVENT_LABEL[m.event]||m.event||''; }
+  const sub=[multiDeck()?(d?pips(d.colors)+' ':'')+esc(deckLabel(m.deckId,m.deckName))+' · '+esc(m.format||''):'', m.notes?esc(m.notes):''].filter(Boolean).join(' · ');
   return `<button type="button" class="mrow" data-act="edit-match" data-id="${esc(m.id)}">
-    <span class="m-res">${chip(r)}<span class="score">${scoreOf(m)}</span></span>
-    <span class="m-date">${esc(fmtDate(m.date))}</span>
-    <span class="m-main"><span class="m-opp">vs ${esc(m.opp||'Unknown')}${m.oppName?` <span class="muted">· ${esc(m.oppName)}</span>`:''}${m.example?' <span class="chip">Sample</span>':''}</span><span class="m-meta">${meta}</span></span>
-    <span class="m-games">${gs}</span>
+    <span class="m-line"><span class="sq ${r}">${r}</span><span class="score">${scoreOf(m)}</span><span class="m-opp">${esc(m.opp||'Unknown')}${m.example?' <span class="chip">Sample</span>':''}</span>${ev?`<span class="m-ev">${esc(ev)}</span>`:''}<span class="m-date">${esc(shortDate(m.date))}</span></span>
+    ${sub?`<span class="m-sub">${sub}</span>`:''}
   </button>`;
 }
 
 function viewMatches(){
   if(!S.matches.length) return emptyStart();
-  const ao=key(S.oppFilter), ms=ao?filtered().filter(m=>key(m.opp)===ao):filtered();
-  let h=`<div class="viewhead"><h1>Matches</h1><span class="muted">${plural(ms.length,'match','matches')}</span></div>${filtersHTML()}`;
-  if(ao){ const r=rec(ms); h+=`<div><span class="fchip">vs ${esc(S.oppFilter)} <span class="muted">${recTxt(r)} · ${pctTxt(r.wr)}</span><button type="button" data-act="clear-arch" aria-label="Show all archetypes">✕</button></span></div>`; }
+  const ms=filteredMatchesTab();
+  let h=`<div class="viewhead"><h1>Matches</h1><span class="muted">${plural(ms.length,'match','matches')}</span></div>${filtersHTML('matches')}`;
+  if(S.f.opp!=='all'&&ms.length){ const r=rec(ms); h+=`<p class="muted sm" style="margin:-6px 0 0">vs ${esc(S.f.opp)}: <strong class="mono">${recTxt(r)}</strong> · <span class="${wrCls(r.wr)}">${pctTxt(r.wr)}</span></p>`; }
   if(!ms.length) return h+'<div class="panel empty">No matches with these filters.</div>';
-  h+='<p class="hint legend">Each tag is a game: green won, red lost. OTP = on the play, OTD = on the draw. Tap a match to edit it.</p>';
-  h+=`<div class="panel flush"><div class="mlist">${ms.slice(0,S.listLimit).map(rowHTML).join('')}</div></div>`;
+  h+=`<div class="panel flush"><div class="mlist">${ms.slice(0,S.listLimit).map(m=>rowHTML(m)).join('')}</div></div>`;
   if(ms.length>S.listLimit) h+=`<div><button type="button" class="btn" data-act="more">Show ${Math.min(100,ms.length-S.listLimit)} more</button></div>`;
   return h;
 }
@@ -611,8 +612,8 @@ function pastRow(x){
   const l=x.l, open=S.leagueOpen===l.id, d=deckById(l.deckId);
   const tag=x.st==='dropped'?'<span class="chip">Drop</span>':x.trophy?'<span class="chip W">Trophy</span>':'<span></span>';
   return `<div class="lrow${open?' open':''}"><button type="button" class="lrow-btn" data-act="toggle-league" data-id="${esc(l.id)}" aria-expanded="${open}">
-    <span class="rec">${recTxt(x.r)}</span><span class="min0"><span class="lcard-deck">${d?pips(d.colors):''}${esc(deckLabel(l.deckId,l.deckName))}</span><span class="muted sm">${esc(l.format||'')} · ${esc(fmtDate(l.startedAt))}${l.example?' · sample':''}</span></span>${tag}<span class="chev" aria-hidden="true">▾</span></button>
-    ${open?`<div class="lrow-body">${x.ms.length?`<div class="mlist">${x.ms.map(rowHTML).join('')}</div>`:'<p class="muted">No matches in this league.</p>'}<div class="row-actions">${x.st==='dropped'?`<button type="button" class="btn sm" data-act="undrop-league" data-id="${esc(l.id)}">Reopen league</button>`:''}<button type="button" class="btn sm danger" data-act="delete-league" data-id="${esc(l.id)}" data-confirm data-confirm-label="Confirm delete">Delete league</button></div></div>`:''}
+    <span class="rec">${recTxt(x.r)}</span><span class="one">${esc(fmtDate(l.startedAt))}${multiDeck()?` · ${d?pips(d.colors)+' ':''}${esc(deckLabel(l.deckId,l.deckName))}`:''}${l.example?' · sample':''}</span>${tag}<span class="chev" aria-hidden="true">▾</span></button>
+    ${open?`<div class="lrow-body">${x.ms.length?`<div class="mlist">${x.ms.map(m=>rowHTML(m,true)).join('')}</div>`:'<p class="muted">No matches in this league.</p>'}<div class="row-actions">${x.st==='dropped'?`<button type="button" class="btn sm" data-act="undrop-league" data-id="${esc(l.id)}">Reopen league</button>`:''}<button type="button" class="btn sm danger" data-act="delete-league" data-id="${esc(l.id)}" data-confirm data-confirm-label="Confirm delete">Delete league</button></div></div>`:''}
   </div>`;
 }
 function viewLeagues(){
@@ -624,14 +625,15 @@ function viewLeagues(){
   if(!all.length) return h+'<div class="panel empty">No leagues with these filters.</div>';
   const tro=done.filter(x=>x.trophy).length, drops=past.length-done.length;
   const avg=done.length?done.reduce((s,x)=>s+x.r.W,0)/done.length:null;
-  h+=`<section class="tiles">${tile('Completed leagues',String(done.length),drops?plural(drops,'with a drop','with a drop'):'no drops')}${tile('Trophies',String(tro),done.length?pctTxt(tro/done.length)+' of completed':'—')}${tile('Average wins',avg==null?'—':avg.toLocaleString(LOCALE,{maximumFractionDigits:1}),'per completed league')}${tile('In progress',String(active.length),active.length===1?'open league':'open leagues')}</section>`;
+  h+=`<section class="tiles">${tile('Leagues played',String(all.length),[active.length?active.length+' in progress':'',drops?plural(drops,'drop','drops'):''].filter(Boolean).join(' · ')||'all completed')}${tile('Average wins',avg==null?'—':avg.toLocaleString(LOCALE,{maximumFractionDigits:1}),'per completed league')}</section>`;
   if(active.length) h+=`<section><h2 class="sec">In progress</h2><div class="lgrid">${active.map(activeCard).join('')}</div></section>`;
   if(done.length){
     const dist=new Map(); done.forEach(x=>{ const k=recTxt(x.r); dist.set(k,(dist.get(k)||0)+1); });
     const rows=[...dist.entries()].sort((a,b)=>parseInt(b[0],10)-parseInt(a[0],10)), max=Math.max(...rows.map(r=>r[1]));
     h+=`<section class="panel"><h2>How your leagues end</h2><div class="dist">${rows.map(([k,n])=>`<div class="drow"><span class="mono">${k}</span><span class="dbar"><i style="width:${Math.round(n*100/max)}%"></i></span><span class="mono">${n}</span></div>`).join('')}</div></section>`;
   }
-  if(past.length) h+=`<section class="panel flush"><h2 class="sec pad">Finished</h2><div class="llist">${past.map(pastRow).join('')}</div></section>`;
+  if(past.length){ const vis=S.lgAll?past:past.slice(0,10);
+    h+=`<section class="panel flush"><h2 class="sec pad">Finished</h2><div class="llist">${vis.map(pastRow).join('')}</div>${past.length>10?`<div style="padding:8px 12px 12px"><button type="button" class="btn ghost sm" data-act="more-leagues">${S.lgAll?'Show fewer':'Show all ('+past.length+')'}</button></div>`:''}</section>`; }
   return h;
 }
 
@@ -639,18 +641,18 @@ function tourRow(x){
   const t=x.t, open=S.tourOpen===t.id, d=deckById(t.deckId);
   const tag=t.placement?`<span class="chip${isWin(t.placement)?' W':''}">${esc(t.placement)}</span>`:'<span></span>';
   return `<div class="lrow${open?' open':''}"><button type="button" class="lrow-btn" data-act="toggle-tour" data-id="${esc(t.id)}" aria-expanded="${open}">
-    <span class="rec">${recTxt(x.r)}</span><span class="min0"><span class="lcard-deck">${esc(t.name||'Tournament')}</span><span class="muted sm">${esc(fmtDate(t.date))} · ${d?pips(d.colors)+' ':''}${esc(deckLabel(t.deckId,t.deckName))}${t.example?' · sample':''}</span></span>${tag}<span class="chev" aria-hidden="true">▾</span></button>
-    ${open?`<div class="lrow-body">${x.ms.length?`<div class="mlist">${x.ms.map(rowHTML).join('')}</div>`:'<p class="muted">No matches in this tournament.</p>'}${t.notes?`<p class="muted">${esc(t.notes)}</p>`:''}<div class="row-actions"><button type="button" class="btn primary sm" data-act="new-match-tour" data-id="${esc(t.id)}">+ Round</button><button type="button" class="btn sm" data-act="edit-tour" data-id="${esc(t.id)}">Edit tournament</button></div></div>`:''}
+    <span class="rec">${recTxt(x.r)}</span><span class="one"><strong>${esc(t.name||'Tournament')}</strong> <span class="muted">${esc(shortDate(t.date))}${multiDeck()?` · ${esc(deckLabel(t.deckId,t.deckName))}`:''}${t.example?' · sample':''}</span></span>${tag}<span class="chev" aria-hidden="true">▾</span></button>
+    ${open?`<div class="lrow-body">${x.ms.length?`<div class="mlist">${x.ms.map(m=>rowHTML(m,true)).join('')}</div>`:'<p class="muted">No matches in this tournament.</p>'}${t.notes?`<p class="muted">${esc(t.notes)}</p>`:''}<div class="row-actions"><button type="button" class="btn primary sm" data-act="new-match-tour" data-id="${esc(t.id)}">+ Round</button><button type="button" class="btn sm" data-act="edit-tour" data-id="${esc(t.id)}">Edit tournament</button></div></div>`:''}
   </div>`;
 }
 function viewTournaments(){
   let h='<div class="viewhead"><h1>Tournaments</h1><button type="button" class="btn" data-act="new-tour">+ New tournament</button></div>';
-  if(!S.tournaments.length) return h+'<div class="panel empty"><p>No tournaments yet. When you log a match, pick “Paper/webcam tournament” as the event and name the tournament: add the next rounds to the same tournament.</p><button type="button" class="btn primary" data-act="new-match">+ Log a match</button></div>';
+  if(!S.tournaments.length) return h+'<div class="panel empty"><p>No tournaments yet. When you log a match, pick “Paper” as the event and name the tournament: add the next rounds to the same tournament.</p><button type="button" class="btn primary" data-act="new-match">+ Log a match</button></div>';
   h+=filtersHTML();
   const all=toursFiltered().map(t=>{ const ms=tourMatches(t.id); return {t,ms,r:rec(ms)}; }).sort((a,b)=>String(b.t.date||'').localeCompare(String(a.t.date||''))||(b.t.createdAt||0)-(a.t.createdAt||0));
   if(!all.length) return h+'<div class="panel empty">No tournaments with these filters.</div>';
   const tot=rec([].concat(...all.map(x=>x.ms))), wins=all.filter(x=>isWin(x.t.placement)).length, top8=all.filter(x=>isTop8(x.t.placement)).length;
-  h+=`<section class="tiles">${tile('Tournaments',String(all.length),all.length===1?'tournament played':'tournaments played')}${tile('Wins',String(wins),'first place')}${tile('Top 8',String(top8),'wins included')}${tile('Round record',recTxt(tot),pctTxt(tot.wr)+' of matches',wrCls(tot.wr))}</section>`;
+  h+=`<section class="tiles">${tile('Tournaments',String(all.length),[wins?plural(wins,'win','wins'):'',top8?top8+' top 8':''].filter(Boolean).join(' · ')||(all.length===1?'tournament played':'tournaments played'))}${tile('Round record',recTxt(tot),pctTxt(tot.wr)+' of matches',wrCls(tot.wr))}</section>`;
   return h+`<section class="panel flush"><div class="llist">${all.map(tourRow).join('')}</div></section>`;
 }
 
@@ -1034,10 +1036,9 @@ document.addEventListener('click',async e=>{
       case 'new-match-tour': { const tt=tourById(id); if(tt) openMatch(null,{tournamentId:tt.id,deckId:tt.deckId,format:tt.format,date:tt.date}); break; }
       case 'edit-plan': openPlan(t.dataset.deck,t.dataset.arch||''); break;
       case 'delete-plan': await remove('plans',id); closeSheet(); toast('Plan deleted'); break;
-      case 'clear-filters': S.f={format:'all',deck:'all',period:'all'}; render(); break;
+      case 'clear-filters': S.f={format:'all',deck:'all',period:'all',opp:'all'}; render(); break;
       case 'more': S.listLimit+=100; render(); break;
-      case 'goto-arch': S.oppFilter=t.dataset.arch||''; S.listLimit=100; if(location.hash==='#matches'){ render(); window.scrollTo(0,0); } else location.hash='matches'; break;
-      case 'clear-arch': S.oppFilter=''; render(); break;
+      case 'more-leagues': S.lgAll=!S.lgAll; render(); break;
       case 'arch-all': S.archAll=!S.archAll; render(); break;
       case 'del-examples': await deleteExamples(); break;
       case 'export': await exportBackup(); break;
@@ -1071,12 +1072,12 @@ document.addEventListener('submit',async e=>{
   try{ await fn(); }catch(x){ formErr(errMsg(x)); }
   finally{ if(btn&&btn.isConnected){ btn.disabled=false; btn.textContent='Save'; } }
 });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!sheet.hidden) closeSheet(); if(e.key==='Enter'&&e.target.matches&&e.target.matches('tr.go')) e.target.click(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!sheet.hidden) closeSheet(); });
 backdrop.addEventListener('click',closeSheet);
 
 /* ---------- routing + boot ---------- */
 function readHash(){ const h=(location.hash||'').slice(1); S.view=VIEWS.includes(h)?h:'summary'; }
-window.addEventListener('hashchange',()=>{ readHash(); if(S.view!=='matches') S.oppFilter=''; render(); window.scrollTo(0,0); });
+window.addEventListener('hashchange',()=>{ readHash(); render(); window.scrollTo(0,0); });
 readHash(); render();
 
 function subscribe(col){
