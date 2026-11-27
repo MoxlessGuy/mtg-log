@@ -777,7 +777,29 @@ function planCard(deckId,gp){
   return `<article class="plan"><header class="plan-head"><h3>${esc(gp.name)}</h3><span class="muted sm">${stats}</span></header>${body}<div><button type="button" class="btn sm" data-act="edit-plan" data-deck="${esc(deckId)}" data-arch="${esc(gp.name)}">${p?'Edit plan':'Write plan'}</button></div></article>`;
 }
 /* An archetype's picture: this deck's plan first, else any plan for the same archetype. */
-function archArt(name,deckId){ const k=key(name); if(!k) return null; const own=deckId&&planFor(deckId,name); if(own&&own.art&&own.art.url) return own.art; const any=S.plans.find(p=>key(p.archetype)===k&&p.art&&p.art.url); return any?any.art:null; }
+function archArt(name,deckId){ const k=key(name); if(!k) return null; const own=deckId&&planFor(deckId,name); if(own&&own.art&&own.art.url) return own.art; const any=S.plans.find(p=>key(p.archetype)===k&&p.art&&p.art.url); return any?any.art:defaultArt(name); }
+/* Default picture for each archetype: the original art of one signature card, fetched once from Scryfall and kept on the device. Your own pick (Edit plan › Archetype image) always wins. */
+const ARCH_CARD={'5c threshold':'Nimble Mongoose','aluren':'Aluren','angry hermit':'Anger','bg gamekeeper':'Gamekeeper','bw control':'Vindicate','cocoa pebbles':'Goblin Bombardment','devastating dreams':'Devastating Dreams','dreadnought':'Phyrexian Dreadnought','elves':'Priest of Titania','enchantress':'Argothian Enchantress','fluctuator':'Fluctuator','gat':'Quirion Dryad','gw survival':'Survival of the Fittest','goblins':'Goblin Lackey','iggy pop':'Ill-Gotten Gains','jund':'Terminate','lands turns':'Exploration','machinehead':'Phyrexian Negator','madness':'Wild Mongrel','moneyball black':'Hymn to Tourach','monor ponza':'Stone Rain','monou storm':'Brain Freeze','oath of druids':'Oath of Druids','psychatog':'Psychatog','rg aggro':'Blastoderm','rg cradle control':"Gaea's Cradle",'reanimator':'Reanimate','rector control':'Academy Rector','replenish':'Replenish','sligh':'Jackal Pup','stasis':'Stasis','survival opposition':'Opposition','terrageddon':'Terravore','the rock':'Phyrexian Plaguelord','ub doomsday':'Doomsday','ur counterburn':'Fire // Ice','ur tinker':'Tinker','uw control':'Wrath of God','uw landstill':'Standstill','white weenie':'Savannah Lions','hfeb':'Hermit Druid','deadguy ale':'Phyrexian Negator','mono black':'Hymn to Tourach','landstill':'Standstill','ponza':'Stone Rain','ub psychatog':'Psychatog'};
+const artMem={}, artQ=[]; let artBusy=false;
+function defaultArt(name){
+  const card=ARCH_CARD[key(name)]; if(!card) return null;
+  if(card in artMem) return artMem[card];
+  try{ const c=localStorage.getItem('mtgfiles.art.'+card); if(c){ artMem[card]=JSON.parse(c); return artMem[card]; } }catch(e){}
+  artMem[card]=null; artQ.push(card); pumpArt(); return null;
+}
+async function pumpArt(){
+  if(artBusy) return; artBusy=true;
+  while(artQ.length){
+    const card=artQ.shift();
+    try{
+      const r=await fetch('https://api.scryfall.com/cards/search?unique=art&order=released&dir=asc&q='+encodeURIComponent('!"'+card+'"'));
+      if(r.ok){ const j=await r.json(), c=(j.data||[])[0], iu=c&&(c.image_uris||(c.card_faces&&c.card_faces[0]&&c.card_faces[0].image_uris));
+        if(iu&&iu.art_crop){ const a={url:iu.art_crop,artist:c.artist||'',card:c.name||card}; artMem[card]=a; try{ localStorage.setItem('mtgfiles.art.'+card,JSON.stringify(a)); }catch(e){} scheduleRender(); } }
+    }catch(e){}
+    await new Promise(res=>setTimeout(res,120));
+  }
+  artBusy=false;
+}
 function initials(n){ return String(n||'?').split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase(); }
 function sbTile(deckId,g){
   const p=planFor(deckId,g.name), art=archArt(g.name,deckId), io=p?{i:parseList(p.in).total,o:parseList(p.out).total}:null;
