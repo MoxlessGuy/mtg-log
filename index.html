@@ -304,7 +304,11 @@ body::before{background:#06060d}
 .top{background:rgba(6,6,13,.92);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid rgba(25,240,255,.25)}
 .brand{gap:10px;font-family:var(--font-display);font-weight:700;font-size:23px;letter-spacing:.1em;color:#fff;text-shadow:0 0 10px rgba(25,240,255,.7)}
 .brand .logo{width:32px;height:32px;filter:drop-shadow(0 0 4px #19f0ff)}
-.tab{font-family:var(--font-display);font-weight:600;font-size:14.5px;letter-spacing:.06em;text-transform:uppercase;border-radius:0;padding:9px 8px 10px;color:var(--muted)}
+.brand{color:#fff;text-decoration:none}
+.brand[aria-current="page"] .logo{filter:drop-shadow(0 0 4px #19f0ff) drop-shadow(0 0 10px #ff2bd6)}
+.tabs{order:3;flex:1 1 100%;justify-content:space-between;gap:0;margin-inline:-4px;overflow:visible}
+.tab{font-family:var(--font-display);font-weight:600;font-size:clamp(12px,3.4vw,15px);letter-spacing:.03em;text-transform:uppercase;border-radius:0;padding:9px 4px 10px;color:var(--muted)}
+@media (min-width:760px){ .tabs{justify-content:flex-start;gap:6px;flex:1 1 auto;order:0} .tab{padding-inline:10px} }
 .tab[aria-current="page"]{background:transparent;color:var(--accent);box-shadow:inset 0 -2px 0 var(--accent);text-shadow:0 0 8px rgba(25,240,255,.8)}
 h1,h2,h3{letter-spacing:.06em}
 .viewhead h1{font-size:26px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#fff}
@@ -347,6 +351,40 @@ input[type=text],input[type=date],input[type=number],select,textarea{background:
 .wrap{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
 .toasts{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 html.locked .fab{display:none}
+/* decks */
+.dcard{padding:0;overflow:hidden;gap:0}
+.dcard-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px}
+.dart{position:relative;aspect-ratio:16/7;background:#0b0b17;overflow:hidden;border-bottom:1px solid rgba(25,240,255,.25)}
+.dart img,.pv-art img{width:100%;height:100%;object-fit:cover;display:block}
+.credit{position:absolute;right:8px;bottom:6px;font-size:10.5px;color:#e9ecff;background:rgba(6,6,13,.65);padding:1px 6px;border-radius:4px}
+.dcard-head{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}
+.dcard-head h3{display:flex;align-items:center;gap:8px;min-width:0;font-size:19px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.dcard-head h3 span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dwr{font-family:var(--font-mono);font-weight:600;font-size:22px;flex:0 0 auto}
+/* art picker */
+.artpick{display:flex;flex-direction:column;gap:8px}
+.art-cur{display:flex;align-items:center;gap:10px;min-height:34px}
+.art-cur img{width:84px;height:48px;object-fit:cover;border-radius:6px;border:1px solid rgba(25,240,255,.4)}
+.art-search{display:flex;gap:6px}
+.art-res{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px}
+.art-res:empty{display:none}
+.art-opt{padding:0;border:2px solid transparent;border-radius:7px;background:none;cursor:pointer;aspect-ratio:4/3;overflow:hidden}
+.art-opt img{width:100%;height:100%;object-fit:cover;display:block}
+.art-opt.on{border-color:var(--accent);box-shadow:0 0 10px var(--glow)}
+.art-link summary{cursor:pointer;color:var(--muted);font-size:13px}
+.art-link input{margin-top:6px}
+/* sideboard spread */
+.sbgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px}
+.sbtile{display:flex;flex-direction:column;gap:4px;padding:6px 6px 9px;border-radius:12px;border:1px solid rgba(25,240,255,.22);background:var(--surface);color:inherit;font:inherit;text-align:center;cursor:pointer;min-width:0}
+.sbtile:hover{border-color:var(--accent);box-shadow:0 0 12px var(--glow)}
+.sbart{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:#0b0b17;display:grid;place-items:center}
+.sbart img{width:100%;height:100%;object-fit:cover;display:block}
+.sbini{font-family:var(--font-neon);font-size:30px;color:#e9fdff;text-shadow:0 0 8px #19f0ff,0 0 18px #19f0ff}
+.sbio{position:absolute;left:4px;bottom:4px;font-family:var(--font-mono);font-size:11px;font-weight:600;background:rgba(6,6,13,.78);padding:1px 5px;border-radius:4px}
+.sbname{font-family:var(--font-display);font-weight:700;font-size:14px;letter-spacing:.04em;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sbrec{font-family:var(--font-mono);font-size:11.5px;color:var(--muted)}
+.pv-art{position:relative;aspect-ratio:16/7;border-radius:10px;overflow:hidden;margin:4px 0 10px}
+.planview{display:flex;flex-direction:column;gap:12px}
 /* startup animation */
 .splash{position:fixed;inset:0;z-index:100;background:#030308;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .35s}
 .splash.out{opacity:0;pointer-events:none}
@@ -369,12 +407,11 @@ html.locked .fab{display:none}
 
 <header class="top">
   <div class="top-inner">
-    <div class="brand"><svg class="logo" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,12 86,38 72,82 28,82 14,38" fill="none" stroke="#19f0ff" stroke-width="5" stroke-linejoin="round"/><circle cx="50" cy="12" r="9" fill="#f8f0c8"/><circle cx="86" cy="38" r="9" fill="#3fa0ff"/><circle cx="72" cy="82" r="9" fill="#b48cff"/><circle cx="28" cy="82" r="9" fill="#ff5a4a"/><circle cx="14" cy="38" r="9" fill="#5dff8a"/><circle cx="50" cy="52" r="11" fill="none" stroke="#ff2bd6" stroke-width="5"/></svg><span>MTG FILES</span></div>
+    <a class="brand" href="#summary" aria-label="MTG Files – Summary"><svg class="logo" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,12 86,38 72,82 28,82 14,38" fill="none" stroke="#19f0ff" stroke-width="5" stroke-linejoin="round"/><circle cx="50" cy="12" r="9" fill="#f8f0c8"/><circle cx="86" cy="38" r="9" fill="#3fa0ff"/><circle cx="72" cy="82" r="9" fill="#b48cff"/><circle cx="28" cy="82" r="9" fill="#ff5a4a"/><circle cx="14" cy="38" r="9" fill="#5dff8a"/><circle cx="50" cy="52" r="11" fill="none" stroke="#ff2bd6" stroke-width="5"/></svg><span>MTG FILES</span></a>
     <nav class="tabs" aria-label="Sections">
-      <a class="tab" href="#summary">Summary</a>
       <a class="tab" href="#matches">Matches</a>
       <a class="tab" href="#leagues">Leagues</a>
-      <a class="tab" href="#tournaments">Tournaments</a>
+      <a class="tab" href="#tournaments">Events</a>
       <a class="tab" href="#decks">Decks</a>
       <a class="tab" href="#sideboard">Sideboard</a>
     </nav>
@@ -700,13 +737,13 @@ function tourRow(x){
   </div>`;
 }
 function viewTournaments(){
-  let h='<div class="viewhead"><h1>Tournaments</h1><button type="button" class="btn" data-act="new-tour">+ New tournament</button></div>';
+  let h='<div class="viewhead"><h1>Events</h1><button type="button" class="btn" data-act="new-tour">+ New event</button></div>';
   if(!S.tournaments.length) return h+'<div class="panel empty"><p>No tournaments yet. When you log a match, pick “Paper” as the event and name the tournament: add the next rounds to the same tournament.</p><button type="button" class="btn primary" data-act="new-match">+ Log a match</button></div>';
   h+=filtersHTML();
   const all=toursFiltered().map(t=>{ const ms=tourMatches(t.id); return {t,ms,r:rec(ms)}; }).sort((a,b)=>String(b.t.date||'').localeCompare(String(a.t.date||''))||(b.t.createdAt||0)-(a.t.createdAt||0));
   if(!all.length) return h+'<div class="panel empty">No tournaments with these filters.</div>';
   const tot=rec([].concat(...all.map(x=>x.ms))), wins=all.filter(x=>isWin(x.t.placement)).length, top8=all.filter(x=>isTop8(x.t.placement)).length;
-  h+=`<section class="tiles">${tile('Tournaments',String(all.length),[wins?plural(wins,'win','wins'):'',top8?top8+' top 8':''].filter(Boolean).join(' · ')||(all.length===1?'tournament played':'tournaments played'))}${tile('Round record',recTxt(tot),pctTxt(tot.wr)+' of matches',wrCls(tot.wr))}</section>`;
+  h+=`<section class="tiles">${tile('Events',String(all.length),[wins?plural(wins,'win','wins'):'',top8?top8+' top 8':''].filter(Boolean).join(' · ')||(all.length===1?'event played':'events played'))}${tile('Round record',recTxt(tot),pctTxt(tot.wr)+' of matches',wrCls(tot.wr))}</section>`;
   return h+`<section class="panel flush"><div class="llist">${all.map(tourRow).join('')}</div></section>`;
 }
 
@@ -714,12 +751,14 @@ function deckCard(d){
   const ms=S.matches.filter(m=>m.deckId===d.id), r=rec(ms);
   const main=parseList(d.main).total, side=parseList(d.side).total, nv=Array.isArray(d.versions)?d.versions.length:0;
   const tro=S.leagues.filter(l=>l.deckId===d.id).map(leagueState).filter(x=>x.trophy).length;
-  return `<article class="dcard${d.archived?' archived':''}">
-    <div class="dcard-top">${pips(d.colors)}<span class="muted sm">${esc(d.format||'')}${d.archived?' · archived':''}${d.example?' · sample':''}</span></div>
-    <h3>${esc(d.name)}</h3>
-    <dl class="dstats"><div><dt>Record</dt><dd>${recTxt(r)}</dd></div><div><dt>WR</dt><dd class="${wrCls(r.wr)}">${pctTxt(r.wr)}</dd></div><div><dt>Trophies</dt><dd>${tro}</dd></div><div><dt>Cards</dt><dd>${main?main+(side?'/'+side:''):'—'}</dd></div></dl>
-    <p class="muted sm">${main?(nv?plural(nv,'previous version','previous versions')+' · ':'')+'list from '+fmtStamp(d.listAt||d.updatedAt):'No list saved'}</p>
-    <div class="dcard-actions"><button type="button" class="btn sm" data-act="edit-deck" data-id="${esc(d.id)}">List &amp; versions</button><button type="button" class="btn sm" data-act="goto-sb" data-id="${esc(d.id)}">Sideboard</button></div>
+  const art=d.art&&d.art.url?d.art:null;
+  return `<article class="dcard${d.archived?' archived':''}${art?' has-art':''}">
+    ${art?`<div class="dart"><img src="${esc(art.url)}" alt="" loading="lazy">${art.artist?`<span class="credit">Art: ${esc(art.artist)}</span>`:''}</div>`:''}
+    <div class="dcard-body">
+      <div class="dcard-head"><h3>${pips(d.colors)}<span>${esc(d.name)}</span></h3><span class="dwr ${wrCls(r.wr)}">${pctTxt(r.wr)}</span></div>
+      <p class="muted sm">${[recTxt(r)+' in '+plural(r.n,'match','matches'), tro?plural(tro,'trophy','trophies'):'', main?main+(side?'/'+side:'')+' cards':'no list', esc(d.format||''), d.archived?'archived':'', d.example?'sample':''].filter(Boolean).join(' · ')}</p>
+      <div class="dcard-actions"><button type="button" class="btn sm" data-act="edit-deck" data-id="${esc(d.id)}">List</button><button type="button" class="btn sm" data-act="goto-sb" data-id="${esc(d.id)}">Sideboard</button></div>
+    </div>
   </article>`;
 }
 function viewDecks(){
@@ -737,6 +776,31 @@ function planCard(deckId,gp){
   const body=p?`<div class="inout"><div><div class="io-lbl in">In · ${parseList(p.in).total}</div><pre>${esc(p.in||'—')}</pre></div><div><div class="io-lbl out">Out · ${parseList(p.out).total}</div><pre>${esc(p.out||'—')}</pre></div></div>${p.notes?`<p class="plan-notes">${esc(p.notes)}</p>`:''}`:'<p class="muted">No plan written yet.</p>';
   return `<article class="plan"><header class="plan-head"><h3>${esc(gp.name)}</h3><span class="muted sm">${stats}</span></header>${body}<div><button type="button" class="btn sm" data-act="edit-plan" data-deck="${esc(deckId)}" data-arch="${esc(gp.name)}">${p?'Edit plan':'Write plan'}</button></div></article>`;
 }
+/* An archetype's picture: this deck's plan first, else any plan for the same archetype. */
+function archArt(name,deckId){ const k=key(name); if(!k) return null; const own=deckId&&planFor(deckId,name); if(own&&own.art&&own.art.url) return own.art; const any=S.plans.find(p=>key(p.archetype)===k&&p.art&&p.art.url); return any?any.art:null; }
+function initials(n){ return String(n||'?').split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase(); }
+function sbTile(deckId,g){
+  const p=planFor(deckId,g.name), art=archArt(g.name,deckId), io=p?{i:parseList(p.in).total,o:parseList(p.out).total}:null;
+  return `<button type="button" class="sbtile" data-act="sb-open" data-deck="${esc(deckId)}" data-arch="${esc(g.name)}">
+    <span class="sbart">${art?`<img src="${esc(art.url)}" alt="" loading="lazy">`:`<span class="sbini">${esc(initials(g.name))}</span>`}${io?`<span class="sbio"><span class="plus">+${io.i}</span> <span class="minus">−${io.o}</span></span>`:''}</span>
+    <span class="sbname">${esc(g.name)}</span>
+    <span class="sbrec">${g.ms.length?`${recTxt(g.r)} · <span class="${wrCls(g.r.wr)}">${pctTxt(g.r.wr)}</span>`:'not faced'}</span>
+  </button>`;
+}
+function openPlanView(deckId,arch){
+  const d=deckById(deckId), p=planFor(deckId,arch); if(!d) return;
+  if(!p){ openPlan(deckId,arch); return; }
+  const g=byArchetype(S.matches.filter(m=>m.deckId===deckId)).find(x=>x.k===key(arch)), art=archArt(arch,deckId);
+  const html=`<div class="planview">
+    ${sheetHead(esc(arch))}
+    ${art?`<div class="pv-art"><img src="${esc(art.url)}" alt="">${art.artist?`<span class="credit">Art: ${esc(art.artist)}</span>`:''}</div>`:''}
+    <p class="muted">${pips(d.colors)} ${esc(d.name)} · ${g?`${recTxt(g.r)} · ${pctTxt(g.r.wr)}`:'never faced'}</p>
+    <div class="inout"><div><div class="io-lbl in">In · ${parseList(p.in).total}</div><pre>${esc(p.in||'—')}</pre></div><div><div class="io-lbl out">Out · ${parseList(p.out).total}</div><pre>${esc(p.out||'—')}</pre></div></div>
+    ${p.notes?`<p class="plan-notes">${esc(p.notes)}</p>`:''}
+    <div class="sheet-actions"><span class="spacer"></span><button type="button" class="btn" data-act="close">Close</button><button type="button" class="btn primary" data-act="edit-plan" data-deck="${esc(deckId)}" data-arch="${esc(arch)}">Edit plan</button></div>
+  </div>`;
+  openSheet(html,{kind:'planview',deckId});
+}
 function viewSideboard(){
   let h='<div class="viewhead"><h1>Sideboard</h1></div>';
   const decks=activeDecks();
@@ -748,11 +812,12 @@ function viewSideboard(){
   S.plans.filter(p=>p.deckId===deckId).forEach(p=>{ const k=key(p.archetype); if(k&&!groups.some(g=>g.k===k)) groups.push({k,name:String(p.archetype).trim(),ms:[],r:rec([])}); });
   h+=`<div class="filters"><select id="sb-deck" aria-label="Deck">${activeDecks(deckId).map(x=>`<option value="${esc(x.id)}"${x.id===deckId?' selected':''}>${esc(x.name)}</option>`).join('')}</select><button type="button" class="btn" data-act="edit-plan" data-deck="${esc(deckId)}" data-arch="">+ Plan for an archetype</button></div>`;
   if(!groups.length) return h+`<div class="panel empty">No archetypes faced with ${esc(d.name)} and no plans written yet. Add a plan or log some matches.</div>`;
-  return h+`<div class="plans">${groups.map(g=>planCard(deckId,g)).join('')}</div>`;
+  return h+`<p class="hint">Tap a matchup to see what comes in and out. +In / −Out are the cards you swap.</p><div class="sbgrid">${groups.map(g=>sbTile(deckId,g)).join('')}</div>`;
 }
 
 const VIEW_FN={summary:viewSummary,matches:viewMatches,leagues:viewLeagues,tournaments:viewTournaments,decks:viewDecks,sideboard:viewSideboard};
 function render(){
+  const br=document.querySelector('.brand'); if(br){ if(S.view==='summary') br.setAttribute('aria-current','page'); else br.removeAttribute('aria-current'); }
   document.querySelectorAll('.tab').forEach(a=>{ if(a.getAttribute('href')==='#'+S.view) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
   const main=$('#main'), ae=document.activeElement, fid=ae&&main.contains(ae)?ae.id:'';
   if(S.status==='nodb') main.innerHTML=noDbHTML();
@@ -883,6 +948,31 @@ function versionsHTML(d){
   }
   return `<details class="versions"><summary>Previous versions (${vs.length})</summary><p class="hint">When you save a different list, the old one is kept here. “Then” shows what you changed after that version.</p><ul>${items.join('')}</ul></details>`;
 }
+/* ---------- art picker: search Scryfall for a card's art crop, or paste any image link ---------- */
+function artHTML(art,label){
+  const a=art&&art.url?art:null;
+  return `<div class="field"><span class="lbl">${label}</span><div class="artpick">
+    <div class="art-cur" id="art-cur">${a?`<img src="${esc(a.url)}" alt=""><span class="muted sm">${esc([a.card,a.artist?'art by '+a.artist:''].filter(Boolean).join(' · ')||'Custom image')}</span><button type="button" class="btn ghost sm" data-act="art-clear">Remove</button>`:'<span class="muted sm">No image yet</span>'}</div>
+    <div class="art-search"><input type="text" id="art-q" placeholder="Search a card, e.g. Hermit Druid" autocomplete="off" enterkeyhint="search"><button type="button" class="btn sm" data-act="art-search">Search</button></div>
+    <div class="art-res" id="art-res"></div>
+    <details class="art-link"><summary>Or paste an image link</summary><input type="text" id="art-url" placeholder="https://… (e.g. an image from mtgpics.com)" autocomplete="off" inputmode="url"></details>
+  </div></div>`;
+}
+function artCur(){ const a=sheetCtx&&sheetCtx.art, el=$('#art-cur'); if(!el) return; el.innerHTML=a&&a.url?`<img src="${esc(a.url)}" alt=""><span class="muted sm">${esc([a.card,a.artist?'art by '+a.artist:''].filter(Boolean).join(' · ')||'Custom image')}</span><button type="button" class="btn ghost sm" data-act="art-clear">Remove</button>`:'<span class="muted sm">No image yet</span>'; }
+async function artSearch(){
+  const q=($('#art-q').value||'').trim(), box=$('#art-res'); if(!q||!box) return;
+  box.innerHTML='<p class="muted sm">Searching…</p>';
+  try{
+    const r=await fetch('https://api.scryfall.com/cards/search?unique=art&order=released&q='+encodeURIComponent(q));
+    if(!r.ok){ box.innerHTML='<p class="muted sm">No cards found.</p>'; return; }
+    const j=await r.json(), list=[];
+    (j.data||[]).forEach(c=>{ const iu=c.image_uris||(c.card_faces&&c.card_faces[0]&&c.card_faces[0].image_uris); if(iu&&iu.art_crop) list.push({url:iu.art_crop,artist:c.artist||'',card:c.name||'',set:(c.set||'').toUpperCase()}); });
+    sheetCtx.artList=list.slice(0,30);
+    box.innerHTML=sheetCtx.artList.length?sheetCtx.artList.map((a,i)=>`<button type="button" class="art-opt" data-act="art-pick" data-i="${i}" title="${esc(a.card+' · '+a.set+' · '+a.artist)}"><img src="${esc(a.url)}" alt="${esc(a.card+', art by '+a.artist)}" loading="lazy"></button>`).join(''):'<p class="muted sm">No art found.</p>';
+  }catch(e){ box.innerHTML='<p class="muted sm">Can’t reach Scryfall right now: are you online?</p>'; }
+}
+function artValue(){ const u=($('#art-url')&&$('#art-url').value||'').trim(); if(/^https?:\/\//i.test(u)) return {url:u,artist:'',card:''}; return sheetCtx.art&&sheetCtx.art.url?sheetCtx.art:null; }
+
 function openDeck(id){
   const d=id?deckById(id):null;
   if(id&&!d){ toast('This deck no longer exists.','err'); return; }
@@ -893,6 +983,7 @@ function openDeck(id){
       <div class="field"><label for="df-format">Format</label><select id="df-format">${formatOptions(d?d.format:((S.decks[0]&&S.decks[0].format)||'Modern'))}</select></div>
       <div class="field"><span class="lbl" id="df-colors-l">Colors</span><div class="colorpick" role="group" aria-labelledby="df-colors-l">${COLORS.map(c=>`<button type="button" class="cbtn ${c}" data-act="color" data-v="${c}" aria-pressed="${!!(d&&Array.isArray(d.colors)&&d.colors.includes(c))}" title="${COLOR_NAME[c]}"><span class="sr">${COLOR_NAME[c]}</span></button>`).join('')}</div></div>
     </div>
+    ${artHTML(d&&d.art,'Deck image')}
     <div class="field"><label for="df-main">Main deck<span class="count" id="df-main-n"></span></label><textarea id="df-main" rows="12" spellcheck="false" placeholder="4 Birds of Paradise&#10;4 Survival of the Fittest&#10;…">${esc(d?d.main:'')}</textarea><span class="hint">One card per line, quantity first. You can paste a list exported from MTGO: if it has a “Sideboard” line, it gets split automatically.</span></div>
     <div class="field"><label for="df-side">Sideboard<span class="count" id="df-side-n"></span></label><textarea id="df-side" rows="6" spellcheck="false">${esc(d?d.side:'')}</textarea></div>
     <div class="field"><label for="df-notes">Notes</label><textarea id="df-notes" class="prose" rows="3">${esc(d?d.notes:'')}</textarea></div>
@@ -900,7 +991,7 @@ function openDeck(id){
     ${d&&Array.isArray(d.versions)&&d.versions.length?versionsHTML(d):''}
     ${actions(d?`<button type="button" class="btn danger" data-act="delete-deck" data-id="${esc(d.id)}" data-confirm data-confirm-label="Confirm delete">Delete</button>`:'')}
   </form>`;
-  openSheet(html,{kind:'deck',id:d?d.id:null,d,colors:d&&Array.isArray(d.colors)?d.colors.slice():[]});
+  openSheet(html,{kind:'deck',id:d?d.id:null,d,colors:d&&Array.isArray(d.colors)?d.colors.slice():[],art:d&&d.art?d.art:null});
   updateCounts();
 }
 async function saveDeck(){
@@ -911,7 +1002,7 @@ async function saveDeck(){
   main=norm(main); side=norm(side);
   const now=Date.now(); let versions=d&&Array.isArray(d.versions)?d.versions.slice():[]; let listAt=d?(d.listAt||d.createdAt||now):now;
   if(d&&(norm(d.main)!==main||norm(d.side)!==side)){ if(norm(d.main)||norm(d.side)){ versions.push({at:listAt,main:d.main||'',side:d.side||''}); if(versions.length>30) versions=versions.slice(-30); } listAt=now; }
-  const data={name,format:$('#df-format').value,colors:COLORS.filter(c=>ctx.colors.includes(c)),main,side,notes:$('#df-notes').value.trim(),archived:d?!!($('#df-arch')&&$('#df-arch').checked):false,versions,listAt,createdAt:d?(d.createdAt||now):now,updatedAt:now};
+  const data={name,format:$('#df-format').value,colors:COLORS.filter(c=>ctx.colors.includes(c)),main,side,notes:$('#df-notes').value.trim(),archived:d?!!($('#df-arch')&&$('#df-arch').checked):false,art:artValue(),versions,listAt,createdAt:d?(d.createdAt||now):now,updatedAt:now};
   if(d&&d.example) data.example=true;
   await save('decks',ctx.id||uid('d'),data);
   closeSheet(); toast(d?'Deck saved':'Deck created');
@@ -989,17 +1080,18 @@ function openPlan(deckId,arch){
       <div class="field"><label for="pf-out">Out<span class="count" id="pf-out-n"></span></label><textarea id="pf-out" rows="7" spellcheck="false" placeholder="2 Cabal Therapy">${esc(p?p.out:'')}</textarea></div>
     </div>
     <p class="warn" id="pf-warn" hidden></p>
+    ${artHTML(p&&p.art?p.art:archArt(arch),'Archetype image')}
     <div class="field"><label for="pf-notes">Matchup notes</label><textarea id="pf-notes" class="prose" rows="4" placeholder="Who’s the beatdown, what to keep, play vs draw differences…">${esc(p?p.notes:'')}</textarea></div>
     ${d.side?`<details class="sidepeek"><summary>Show the deck’s sideboard</summary><pre>${esc(d.side)}</pre></details>`:''}
     ${actions(p?`<button type="button" class="btn danger" data-act="delete-plan" data-id="${esc(p.id)}" data-confirm data-confirm-label="Confirm delete">Delete</button>`:'')}
   </form>`;
-  openSheet(html,{kind:'plan',deckId,p});
+  openSheet(html,{kind:'plan',deckId,p,art:p&&p.art?p.art:archArt(arch)});
   updateCounts();
 }
 async function savePlan(){
   const ctx=sheetCtx, arch=$('#pf-arch').value.trim(); if(!arch) return formErr('Enter which archetype the plan is for.');
   const p=ctx.p||planFor(ctx.deckId,arch), now=Date.now();
-  const data={deckId:ctx.deckId,archetype:arch,in:norm($('#pf-in').value),out:norm($('#pf-out').value),notes:$('#pf-notes').value.trim(),createdAt:p?(p.createdAt||now):now,updatedAt:now};
+  const data={deckId:ctx.deckId,archetype:arch,in:norm($('#pf-in').value),out:norm($('#pf-out').value),notes:$('#pf-notes').value.trim(),art:artValue(),createdAt:p?(p.createdAt||now):now,updatedAt:now};
   if(p&&p.example) data.example=true;
   await save('plans',p?p.id:ctx.deckId+'__'+slug(arch),data);
   closeSheet(); toast('Plan saved');
@@ -1089,6 +1181,10 @@ document.addEventListener('click',async e=>{
       case 'toggle-tour': S.tourOpen=S.tourOpen===id?null:id; render(); break;
       case 'new-match-tour': { const tt=tourById(id); if(tt) openMatch(null,{tournamentId:tt.id,deckId:tt.deckId,format:tt.format,date:tt.date}); break; }
       case 'edit-plan': openPlan(t.dataset.deck,t.dataset.arch||''); break;
+      case 'sb-open': openPlanView(t.dataset.deck,t.dataset.arch||''); break;
+      case 'art-search': await artSearch(); break;
+      case 'art-pick': { const a=sheetCtx&&sheetCtx.artList&&sheetCtx.artList[+t.dataset.i]; if(a){ sheetCtx.art=a; const u=$('#art-url'); if(u) u.value=''; artCur(); document.querySelectorAll('.art-opt').forEach(b=>b.classList.toggle('on',b===t)); } break; }
+      case 'art-clear': sheetCtx.art=null; { const u=$('#art-url'); if(u) u.value=''; } artCur(); break;
       case 'delete-plan': await remove('plans',id); closeSheet(); toast('Plan deleted'); break;
       case 'clear-filters': S.f={format:'all',deck:'all',period:'all',opp:'all'}; render(); break;
       case 'more': S.listLimit+=100; render(); break;
@@ -1126,7 +1222,7 @@ document.addEventListener('submit',async e=>{
   try{ await fn(); }catch(x){ formErr(errMsg(x)); }
   finally{ if(btn&&btn.isConnected){ btn.disabled=false; btn.textContent='Save'; } }
 });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!sheet.hidden) closeSheet(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!sheet.hidden) closeSheet(); if(e.key==='Enter'&&e.target&&e.target.id==='art-q'){ e.preventDefault(); artSearch(); } });
 backdrop.addEventListener('click',closeSheet);
 
 /* ---------- routing + boot ---------- */
