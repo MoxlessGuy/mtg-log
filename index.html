@@ -173,6 +173,10 @@ table.compact{table-layout:fixed}
 table.compact td.name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal}
 table.compact .c-m{width:36px} table.compact .c-rec{width:66px} table.compact .c-wr{width:52px}
 table.compact th,table.compact td{padding-inline:6px}
+tr.go{cursor:pointer} tr.go:hover td,tr.go:focus-visible td{background:var(--surface-2)} tr.go td.name{color:var(--accent);font-weight:500}
+.fchip{display:inline-flex;align-items:center;gap:8px;padding:6px 6px 6px 12px;border-radius:999px;background:var(--accent-soft);color:var(--fg);font-size:14px;font-weight:600;max-width:100%}
+.fchip .muted{font-weight:500}
+.fchip button{font:inherit;font-size:16px;line-height:1;width:26px;height:26px;border-radius:50%;border:0;background:transparent;color:var(--accent);cursor:pointer}
 
 /* Meta share donut */
 .meta{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
@@ -427,7 +431,7 @@ const GAME_LABEL={W:'Won',L:'Lost',D:'Drawn'};
 const COLS=['matches','decks','leagues','tournaments','plans'];
 const LOCALE='en-GB';
 
-const S={db:null,status:'loading',slow:false,err:null,notOwner:false,any:false,
+const S={oppFilter:'',db:null,status:'loading',slow:false,err:null,notOwner:false,any:false,
   matches:[],decks:[],leagues:[],tournaments:[],plans:[],got:{matches:false,decks:false,leagues:false,tournaments:false,plans:false},
   view:'summary',f:{format:'all',deck:'all',period:'all'},listLimit:100,showArchived:false,sbDeck:null,leagueOpen:null,tourOpen:null,archAll:false};
 let sheetCtx=null, lastFocus=null, renderTimer=null, slowTimer=null;
@@ -507,7 +511,7 @@ const bar=wr=>`<span class="wrbar" aria-hidden="true"><i style="width:${wr==null
 const tile=(lbl,val,sub,cls)=>`<div class="tile"><span class="lbl">${lbl}</span><span class="val ${cls||''}">${val}</span><span class="sub">${sub||''}</span></div>`;
 function splitRow(label,r,hint){ return `<div class="srow"><span>${label}${hint?` <span class="muted sm">${hint}</span>`:''}</span><span class="num">${r.W}–${r.L}</span><span class="num ${wrCls(r.wr)}">${pctTxt(r.wr)}</span>${bar(r.wr)}</div>`; }
 function statTable(first,rows,compact){ if(!rows.length) return '<p class="hint">Nothing to show yet.</p>';
-  if(compact) return `<div class="tbl-wrap"><table class="compact"><colgroup><col><col class="c-m"><col class="c-rec"><col class="c-wr"></colgroup><thead><tr><th>${first}</th><th class="num">M</th><th class="num">Record</th><th class="num">WR</th></tr></thead><tbody>${rows.map(x=>`<tr><td class="name" title="${x.title||''}">${x.label}</td><td class="num">${x.r.n}</td><td class="num">${recTxt(x.r)}</td><td class="num ${wrCls(x.r.wr)}">${pctTxt(x.r.wr)}</td></tr>`).join('')}</tbody></table></div>`;
+  if(compact) return `<div class="tbl-wrap"><table class="compact"><colgroup><col><col class="c-m"><col class="c-rec"><col class="c-wr"></colgroup><thead><tr><th>${first}</th><th class="num">M</th><th class="num">Record</th><th class="num">WR</th></tr></thead><tbody>${rows.map(x=>`<tr${x.act?` class="go" data-act="${x.act}" data-arch="${x.arg}" tabindex="0" role="link"`:''}><td class="name" title="${x.title||''}">${x.label}</td><td class="num">${x.r.n}</td><td class="num">${recTxt(x.r)}</td><td class="num ${wrCls(x.r.wr)}">${pctTxt(x.r.wr)}</td></tr>`).join('')}</tbody></table></div>`;
   return `<div class="tbl-wrap"><table><thead><tr><th>${first}</th><th class="num">M</th><th class="num">Record</th><th class="num">WR</th><th class="barcol"><span class="sr">Win rate bar</span></th></tr></thead><tbody>${rows.map(x=>`<tr><td class="name">${x.label}</td><td class="num">${x.r.n}</td><td class="num">${recTxt(x.r)}</td><td class="num ${wrCls(x.r.wr)}">${pctTxt(x.r.wr)}</td><td class="barcol">${bar(x.r.wr)}</td></tr>`).join('')}</tbody></table></div>`; }
 
 function filtersHTML(){
@@ -565,7 +569,7 @@ function viewSummary(){
   const dmap=new Map(); ms.forEach(m=>{ const k=m.deckId||'?'; if(!dmap.has(k)) dmap.set(k,[]); dmap.get(k).push(m); });
   const drows=[...dmap.entries()].map(([id,list])=>{ const d=deckById(id); return {label:(d?pips(d.colors)+' ':'')+esc(deckLabel(id,list[0].deckName)),title:esc(deckLabel(id,list[0].deckName)),r:rec(list)}; }).sort((a,b)=>b.r.n-a.r.n);
   h+=`<section class="panel"><h2>By deck</h2>${statTable('Deck',drows,true)}</section>
-  <section class="panel"><h2>Vs archetypes</h2>${statTable('Archetype',shown.map(a=>({label:esc(a.name),title:esc(a.name),r:a.r})),true)}${arch.length>8?`<button type="button" class="btn ghost sm" data-act="arch-all" style="margin-top:8px">${S.archAll?'Show fewer':'Show all ('+arch.length+')'}</button>`:''}</section>
+  <section class="panel"><div class="panel-head"><h2>Archetypes</h2><span class="muted sm">tap one to see its matches</span></div>${statTable('Archetype',shown.map(a=>({label:esc(a.name),title:esc(a.name),r:a.r,act:'goto-arch',arg:esc(a.name)})),true)}${arch.length>8?`<button type="button" class="btn ghost sm" data-act="arch-all" style="margin-top:8px">${S.archAll?'Show fewer':'Show all ('+arch.length+')'}</button>`:''}</section>
   ${metaHTML(arch,arch.reduce((n,a)=>n+a.ms.length,0))}`;
   return h;
 }
@@ -586,8 +590,9 @@ function rowHTML(m){
 
 function viewMatches(){
   if(!S.matches.length) return emptyStart();
-  const ms=filtered();
+  const ao=key(S.oppFilter), ms=ao?filtered().filter(m=>key(m.opp)===ao):filtered();
   let h=`<div class="viewhead"><h1>Matches</h1><span class="muted">${plural(ms.length,'match','matches')}</span></div>${filtersHTML()}`;
+  if(ao){ const r=rec(ms); h+=`<div><span class="fchip">vs ${esc(S.oppFilter)} <span class="muted">${recTxt(r)} · ${pctTxt(r.wr)}</span><button type="button" data-act="clear-arch" aria-label="Show all archetypes">✕</button></span></div>`; }
   if(!ms.length) return h+'<div class="panel empty">No matches with these filters.</div>';
   h+='<p class="hint legend">Each tag is a game: green won, red lost. OTP = on the play, OTD = on the draw. Tap a match to edit it.</p>';
   h+=`<div class="panel flush"><div class="mlist">${ms.slice(0,S.listLimit).map(rowHTML).join('')}</div></div>`;
@@ -1031,6 +1036,8 @@ document.addEventListener('click',async e=>{
       case 'delete-plan': await remove('plans',id); closeSheet(); toast('Plan deleted'); break;
       case 'clear-filters': S.f={format:'all',deck:'all',period:'all'}; render(); break;
       case 'more': S.listLimit+=100; render(); break;
+      case 'goto-arch': S.oppFilter=t.dataset.arch||''; S.listLimit=100; if(location.hash==='#matches'){ render(); window.scrollTo(0,0); } else location.hash='matches'; break;
+      case 'clear-arch': S.oppFilter=''; render(); break;
       case 'arch-all': S.archAll=!S.archAll; render(); break;
       case 'del-examples': await deleteExamples(); break;
       case 'export': await exportBackup(); break;
@@ -1064,12 +1071,12 @@ document.addEventListener('submit',async e=>{
   try{ await fn(); }catch(x){ formErr(errMsg(x)); }
   finally{ if(btn&&btn.isConnected){ btn.disabled=false; btn.textContent='Save'; } }
 });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!sheet.hidden) closeSheet(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!sheet.hidden) closeSheet(); if(e.key==='Enter'&&e.target.matches&&e.target.matches('tr.go')) e.target.click(); });
 backdrop.addEventListener('click',closeSheet);
 
 /* ---------- routing + boot ---------- */
 function readHash(){ const h=(location.hash||'').slice(1); S.view=VIEWS.includes(h)?h:'summary'; }
-window.addEventListener('hashchange',()=>{ readHash(); render(); window.scrollTo(0,0); });
+window.addEventListener('hashchange',()=>{ readHash(); if(S.view!=='matches') S.oppFilter=''; render(); window.scrollTo(0,0); });
 readHash(); render();
 
 function subscribe(col){
