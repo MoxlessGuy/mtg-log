@@ -708,7 +708,7 @@ function pastRow(x){
   </div>`;
 }
 function viewLeagues(){
-  let h='<div class="viewhead"><h1>Leagues</h1><button type="button" class="btn" data-act="new-league">+ New league</button></div>';
+  let h='<div class="viewhead"><h1>Leagues</h1></div>';
   if(!S.leagues.length) return h+'<div class="panel empty"><p>No leagues yet. When you log a match, pick “League” as the event: the league opens by itself and closes after 5 matches.</p><button type="button" class="btn primary" data-act="new-match">+ Log a match</button></div>';
   h+=filtersHTML();
   const all=leaguesFiltered().map(leagueState).sort((a,b)=>String(b.l.startedAt||'').localeCompare(String(a.l.startedAt||''))||(b.l.createdAt||0)-(a.l.createdAt||0));
@@ -737,7 +737,7 @@ function tourRow(x){
   </div>`;
 }
 function viewTournaments(){
-  let h='<div class="viewhead"><h1>Events</h1><button type="button" class="btn" data-act="new-tour">+ New event</button></div>';
+  let h='<div class="viewhead"><h1>Events</h1></div>';
   if(!S.tournaments.length) return h+'<div class="panel empty"><p>No tournaments yet. When you log a match, pick “Paper” as the event and name the tournament: add the next rounds to the same tournament.</p><button type="button" class="btn primary" data-act="new-match">+ Log a match</button></div>';
   h+=filtersHTML();
   const all=toursFiltered().map(t=>{ const ms=tourMatches(t.id); return {t,ms,r:rec(ms)}; }).sort((a,b)=>String(b.t.date||'').localeCompare(String(a.t.date||''))||(b.t.createdAt||0)-(a.t.createdAt||0));
@@ -765,7 +765,7 @@ function viewDecks(){
   const lastUsed=new Map(); S.matches.forEach(m=>{ if(m.deckId&&String(m.date||'')>String(lastUsed.get(m.deckId)||'')) lastUsed.set(m.deckId,m.date); });
   const list=S.decks.filter(d=>S.showArchived||!d.archived).sort((a,b)=>String(lastUsed.get(b.id)||'').localeCompare(String(lastUsed.get(a.id)||''))||byName(a,b));
   const nArch=S.decks.filter(d=>d.archived).length;
-  let h=`<div class="viewhead"><h1>Decks</h1><div class="head-actions">${nArch?`<button type="button" class="btn ghost sm" data-act="toggle-archived">${S.showArchived?'Hide archived':'Show archived ('+nArch+')'}</button>`:''}<button type="button" class="btn" data-act="new-deck">+ New deck</button></div></div>`;
+  let h=`<div class="viewhead"><h1>Decks</h1><div class="head-actions">${nArch?`<button type="button" class="btn ghost sm" data-act="toggle-archived">${S.showArchived?'Hide archived':'Show archived ('+nArch+')'}</button>`:''}</div></div>`;
   if(!list.length) return h+'<div class="panel empty"><p>No decks yet. Create one to save its list, sideboard and versions.</p><button type="button" class="btn primary" data-act="new-deck">+ New deck</button></div>';
   return h+`<div class="dgrid">${list.map(deckCard).join('')}</div>`;
 }
@@ -818,6 +818,9 @@ function viewSideboard(){
 const VIEW_FN={summary:viewSummary,matches:viewMatches,leagues:viewLeagues,tournaments:viewTournaments,decks:viewDecks,sideboard:viewSideboard};
 function render(){
   const br=document.querySelector('.brand'); if(br){ if(S.view==='summary') br.setAttribute('aria-current','page'); else br.removeAttribute('aria-current'); }
+  /* the floating button changes with the section; Sideboard has none */
+  const fab=document.querySelector('.fab'), FAB={summary:['new-match','+ Log a match'],matches:['new-match','+ Log a match'],leagues:['new-league','+ New league'],tournaments:['new-tour','+ New event'],decks:['new-deck','+ New deck']}[S.view];
+  if(fab){ fab.hidden=!FAB; if(FAB){ fab.dataset.act=FAB[0]; fab.textContent=FAB[1]; } }
   document.querySelectorAll('.tab').forEach(a=>{ if(a.getAttribute('href')==='#'+S.view) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
   const main=$('#main'), ae=document.activeElement, fid=ae&&main.contains(ae)?ae.id:'';
   if(S.status==='nodb') main.innerHTML=noDbHTML();
