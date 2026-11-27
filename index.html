@@ -374,17 +374,20 @@ html.locked .fab{display:none}
 .art-link summary{cursor:pointer;color:var(--muted);font-size:13px}
 .art-link input{margin-top:6px}
 /* sideboard spread */
-.sbgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px}
-.sbtile{display:flex;flex-direction:column;gap:4px;padding:6px 6px 9px;border-radius:12px;border:1px solid rgba(25,240,255,.22);background:var(--surface);color:inherit;font:inherit;text-align:center;cursor:pointer;min-width:0}
+.sbgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (min-width:760px){ .sbgrid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))} }
+.sbtile{display:flex;flex-direction:column;gap:4px;padding:4px 4px 6px;border-radius:10px;border:1px solid rgba(25,240,255,.22);background:var(--surface);color:inherit;font:inherit;text-align:center;cursor:pointer;min-width:0}
 .sbtile:hover{border-color:var(--accent);box-shadow:0 0 12px var(--glow)}
 .sbart{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:#0b0b17;display:grid;place-items:center}
 .sbart img{width:100%;height:100%;object-fit:cover;display:block}
-.sbini{font-family:var(--font-neon);font-size:30px;color:#e9fdff;text-shadow:0 0 8px #19f0ff,0 0 18px #19f0ff}
+.sbini{font-family:var(--font-neon);font-size:22px;color:#e9fdff;text-shadow:0 0 8px #19f0ff,0 0 18px #19f0ff}
 .sbio{position:absolute;left:4px;bottom:4px;font-family:var(--font-mono);font-size:11px;font-weight:600;background:rgba(6,6,13,.78);padding:1px 5px;border-radius:4px}
-.sbname{font-family:var(--font-display);font-weight:700;font-size:14px;letter-spacing:.04em;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sbname{font-family:var(--font-display);font-weight:700;font-size:clamp(10px,2.7vw,12.5px);letter-spacing:0;line-height:1.1;min-height:2.2em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:break-word;hyphens:auto}
 .sbrec{font-family:var(--font-mono);font-size:11.5px;color:var(--muted)}
 .pv-art{position:relative;aspect-ratio:16/7;border-radius:10px;overflow:hidden;margin:4px 0 10px}
 .planview{display:flex;flex-direction:column;gap:12px}
+.sbx-paper{background:#fff;border-radius:8px;padding:12px;overflow-x:auto;margin-top:12px}
+.sbx-paper .sbx-doc{min-width:640px}
 /* startup animation */
 .splash{position:fixed;inset:0;z-index:100;background:#030308;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .35s}
 .splash.out{opacity:0;pointer-events:none}
@@ -480,9 +483,9 @@ const mobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)||(navigator.m
 const downloads={
   /* Phones get the share sheet (Save to Files, Mail, AirDrop…); computers get a normal download. */
   async save(req){
-    const name=String(req&&req.filename||'backup.json'), blob=new Blob([req.data],{type:'application/json'});
+    const name=String(req&&req.filename||'backup.json'), type=String(req&&req.type||'application/json'), blob=new Blob([req.data],{type});
     if(mobile&&navigator.share&&navigator.canShare&&typeof File==='function'){
-      const file=new File([blob],name,{type:'application/json'});
+      const file=new File([blob],name,{type});
       if(navigator.canShare({files:[file]})){
         try{ await navigator.share({files:[file]}); return {status:'saved'}; }
         catch(e){ if(e&&e.name==='AbortError') throw {code:'declined'}; }
@@ -779,17 +782,16 @@ function planCard(deckId,gp){
 /* An archetype's picture: this deck's plan first, else any plan for the same archetype. */
 function archArt(name,deckId){ const k=key(name); if(!k) return null; const own=deckId&&planFor(deckId,name); if(own&&own.art&&own.art.url) return own.art; const any=S.plans.find(p=>key(p.archetype)===k&&p.art&&p.art.url); return any?any.art:defaultArt(name); }
 /* Default picture for each archetype: the original art of one signature card. Your own pick (Edit plan › Archetype image) always wins. */
-const ARCH_CARD={'5c threshold':'Nimble Mongoose','aluren':'Aluren','angry hermit':'Sutured Ghoul','bg gamekeeper':'Gamekeeper','bw control':'Vindicate','cocoa pebbles':'Goblin Bombardment','devastating dreams':'Devastating Dreams','dreadnought':'Phyrexian Dreadnought','elves':'Priest of Titania','enchantress':'Argothian Enchantress','fluctuator':'Fluctuator','gat':'Quirion Dryad','gw survival':'Survival of the Fittest','goblins':'Goblin Lackey','iggy pop':'Ill-Gotten Gains','jund':'Terminate','lands turns':'Exploration','machinehead':'Lavaborn Muse','madness':'Wild Mongrel','moneyball black':'Hypnotic Specter','monor ponza':'Stone Rain','monou storm':'Brain Freeze','oath of druids':'Oath of Druids','psychatog':'Psychatog','rg aggro':'Blastoderm','rg cradle control':"Gaea's Cradle",'reanimator':'Reanimate','rector control':'Academy Rector','replenish':'Replenish','sligh':'Jackal Pup','stasis':'Stasis','survival opposition':'Opposition','terrageddon':'Terravore','the rock':'Pernicious Deed','ub doomsday':'Doomsday','ur counterburn':'Fire // Ice','ur tinker':'Tinker','uw control':'Wrath of God','uw landstill':'Standstill','white weenie':'Savannah Lions','hfeb':'Hermit Druid','mono black':'Hypnotic Specter','landstill':'Standstill','ponza':'Stone Rain','ub psychatog':'Psychatog'};
+const ARCH_CARD={'5c threshold':'Nimble Mongoose','aluren':'Aluren','angry hermit':'Sutured Ghoul','bg gamekeeper':'Gamekeeper','bw control':'Vindicate','cocoa pebbles':'Goblin Bombardment','devastating dreams':'Devastating Dreams','dreadnought':'Phyrexian Dreadnought','elves':'Priest of Titania','enchantress':'Argothian Enchantress','fluctuator':'Fluctuator','gat':'Quirion Dryad','gw survival':'Survival of the Fittest','goblins':'Goblin Lackey','iggy pop':'Ill-Gotten Gains','jund':'Terminate','lands turns':'Exploration','machinehead':'Lavaborn Muse','madness':'Wild Mongrel','moneyball black':'Hypnotic Specter','monor ponza':'Stone Rain','monou storm':'Brain Freeze','oath of druids':'Oath of Druids','psychatog':'Psychatog','rg aggro':'Blastoderm','rg cradle control':"Gaea's Cradle",'reanimator':'Reanimate','rector control':'Academy Rector','replenish':'Replenish','sligh':'Jackal Pup','stasis':'Stasis','survival opposition':'Opposition','terrageddon':'Terravore','the rock':'Pernicious Deed','ub doomsday':'Doomsday','ur counterburn':'Prophetic Bolt','ur tinker':'Tinker','uw control':'Wrath of God','uw landstill':'Standstill','white weenie':'Savannah Lions','hfeb':'Hermit Druid','mono black':'Hypnotic Specter','landstill':'Standstill','ponza':'Stone Rain','ub psychatog':'Psychatog'};
 /* Art crops resolved once (oldest printing on Scryfall) and written here, so the tiles load at once with no lookups. */
-const CARD_ART={"Nimble Mongoose":["9/9/99e5ecf5-a662-4df0-a6ba-9177c62b6503.jpg?1783945213","Terese Nielsen"],"Aluren":["2/6/268403bc-733d-446e-a7c1-abc957c42bc2.jpg?1783946622","April Lee"],"Sutured Ghoul":["f/7/f769536f-def1-40b8-863f-ba12c7cb0d87.jpg?1783945121","Carl Critchlow"],"Gamekeeper":["b/6/b6006c21-28b5-4550-8b4e-ac631f39cdf7.jpg?1783946063","Scott Hampton"],"Vindicate":["2/a/2a1bfefd-dae8-49e9-9d56-cc852e3dc93b.jpg?1792506310","Brian Snõddy"],"Goblin Bombardment":["1/7/179e954f-1d90-4ef4-b800-25845cc338e2.jpg?1783946629","Brian Snõddy"],"Devastating Dreams":["9/f/9fffeed0-a5ea-47ac-a7a4-0cc3bb1d408a.jpg?1783945149","Tony Szczudlo"],"Phyrexian Dreadnought":["7/b/7b8197b9-0cd1-4fa1-9668-d1b5f1759151.jpg?1783947042","Pete Venters"],"Priest of Titania":["9/6/965c33c3-0c68-4516-b8b0-5a0552ed44b6.jpg?1783946311","Rebecca Guay"],"Argothian Enchantress":["9/a/9ababc1a-515e-4e20-8819-19d84d9b0af5.jpg?1783946320","Daren Bader"],"Fluctuator":["9/2/92078408-e0e4-443e-b0fd-aac0ac651f46.jpg?1783946305","John Matson"],"Quirion Dryad":["f/6/f6841ae6-b15f-488e-9cae-2cc5ec668278.jpg?1783945611","Don Hazeltine"],"Survival of the Fittest":["c/0/c060c178-3c0e-493f-b6f0-ead5b1d6f191.jpg?1783946500","Pete Venters"],"Goblin Lackey":["9/b/9b848caa-aad8-4060-8f86-304a8556de2d.jpg?1783946330","Jerry Tiritilli"],"Ill-Gotten Gains":["8/2/826230ad-6b2b-42a0-9d6f-ed07d3554efd.jpg?1783946343","Greg Staples"],"Terminate":["1/9/190ca502-672d-4cc0-b6e0-b9de517058d0.jpg?1783945602","DiTerlizzi"],"Exploration":["2/f/2f09e451-0246-45a2-8bfd-07d3c65ddfe6.jpg?1783946316","Brian Snõddy"],"Lavaborn Muse":["4/c/4cbc94fb-9e3f-4075-bb6a-8f04862dc585.jpg?1783944905","Brian Snõddy"],"Wild Mongrel":["5/b/5bb8dd5c-a79a-4afc-80b2-64645bb17a34.jpg?1783945208","Anthony S. Waters"],"Hypnotic Specter":["b/4/b43b900f-2d9b-442b-9699-058483604ec9.jpg?1783948694","Douglas Shuler"],"Stone Rain":["5/7/57ff74cb-a2ed-4123-ac42-f72f9820049e.jpg?1783948681","Daniel Gelon"],"Brain Freeze":["5/9/59a43ef5-08f0-44fc-802d-b6cfd56b7d1f.jpg?1789015952","Tim Hildebrandt"],"Oath of Druids":["c/f/cf14de50-d123-400c-862e-2c95fd2aa23f.jpg?1783946504","Daren Bader"],"Psychatog":["6/7/6757bf0e-489f-4be2-9e41-463b59f00dd1.jpg?1783945205","Edward P. Beard, Jr."],"Blastoderm":["9/d/9db5d6c2-b11f-442a-b172-c0c99c9bec07.jpg?1783945818","Eric Peterson"],"Gaea's Cradle":["9/a/9a3cccac-c826-41ad-b595-4d53db1ab8fa.jpg?1783946579","Mark Zug"],"Reanimate":["a/e/ae1ef31c-8ca5-444c-8f39-e1d1827318f5.jpg?1783946636","Robert Bliss"],"Academy Rector":["4/3/4367bc78-0912-4abd-8edd-bc792558d01a.jpg?1783946087","Heather Hudson"],"Replenish":["7/f/7fd2fe13-bbc0-42b7-bc42-3b51910ce118.jpg?1783946084","Jim Nelson"],"Jackal Pup":["3/7/3707ab74-9aec-4d30-86e0-ffa5f72d5b4f.jpg?1783946629","Susan Van Camp"],"Stasis":["b/6/b6cef408-5b4b-49f6-9531-be544815b93f.jpg?1783948701","Fay Jones"],"Opposition":["9/5/95be2701-af7c-483e-8165-e8bd4b2774ed.jpg?1783946078","Todd Lockwood"],"Terravore":["c/3/c39c412b-2f21-483a-b744-5d55bc007c0d.jpg?1783945208","Jim Nelson"],"Pernicious Deed":["a/e/ae4cbb33-4947-49f0-b612-a92141fbfaa6.jpg?1783945332","Christopher Moeller"],"Doomsday":["5/b/5b3c6d87-9383-450b-bba5-33435b6b0d08.jpg?1792506446","Adrian Smith"],"Fire // Ice":["f/9/f98f4538-5b5b-475d-b98f-49d01dae6f04.jpg?1783945328","David Martin & Franz Vohwinkel"],"Tinker":["7/d/7da23b15-dfb8-4267-9b33-d7a4c035c434.jpg?1783946244","Mike Raabe"],"Wrath of God":["a/2/a2788d69-6a3a-42f0-8736-cc6b57755ecd.jpg?1783948708","Quinton Hoover"],"Standstill":["3/e/3ede3f6f-e642-4fe4-aa37-0f01cdf4d149.jpg?1783945256","Heather Hudson"],"Savannah Lions":["d/0/d05b92bd-797e-413f-a8b0-32e0937a1ee0.jpg?1783948710","Daniel Gelon"],"Hermit Druid":["3/e/3efc0622-ac2c-4722-ba05-961cc98c5940.jpg?1783946550","Heather Hudson"]};
+const CARD_ART={"Nimble Mongoose":["9/9/99e5ecf5-a662-4df0-a6ba-9177c62b6503.jpg?1783945213","Terese Nielsen"],"Aluren":["2/6/268403bc-733d-446e-a7c1-abc957c42bc2.jpg?1783946622","April Lee"],"Sutured Ghoul":["f/7/f769536f-def1-40b8-863f-ba12c7cb0d87.jpg?1783945121","Carl Critchlow"],"Gamekeeper":["b/6/b6006c21-28b5-4550-8b4e-ac631f39cdf7.jpg?1783946063","Scott Hampton"],"Vindicate":["2/a/2a1bfefd-dae8-49e9-9d56-cc852e3dc93b.jpg?1792506310","Brian Snõddy"],"Goblin Bombardment":["1/7/179e954f-1d90-4ef4-b800-25845cc338e2.jpg?1783946629","Brian Snõddy"],"Devastating Dreams":["9/f/9fffeed0-a5ea-47ac-a7a4-0cc3bb1d408a.jpg?1783945149","Tony Szczudlo"],"Phyrexian Dreadnought":["7/b/7b8197b9-0cd1-4fa1-9668-d1b5f1759151.jpg?1783947042","Pete Venters"],"Priest of Titania":["9/6/965c33c3-0c68-4516-b8b0-5a0552ed44b6.jpg?1783946311","Rebecca Guay"],"Argothian Enchantress":["9/a/9ababc1a-515e-4e20-8819-19d84d9b0af5.jpg?1783946320","Daren Bader"],"Fluctuator":["9/2/92078408-e0e4-443e-b0fd-aac0ac651f46.jpg?1783946305","John Matson"],"Quirion Dryad":["f/6/f6841ae6-b15f-488e-9cae-2cc5ec668278.jpg?1783945611","Don Hazeltine"],"Survival of the Fittest":["c/0/c060c178-3c0e-493f-b6f0-ead5b1d6f191.jpg?1783946500","Pete Venters"],"Goblin Lackey":["9/b/9b848caa-aad8-4060-8f86-304a8556de2d.jpg?1783946330","Jerry Tiritilli"],"Ill-Gotten Gains":["8/2/826230ad-6b2b-42a0-9d6f-ed07d3554efd.jpg?1783946343","Greg Staples"],"Terminate":["1/9/190ca502-672d-4cc0-b6e0-b9de517058d0.jpg?1783945602","DiTerlizzi"],"Exploration":["2/f/2f09e451-0246-45a2-8bfd-07d3c65ddfe6.jpg?1783946316","Brian Snõddy"],"Lavaborn Muse":["4/c/4cbc94fb-9e3f-4075-bb6a-8f04862dc585.jpg?1783944905","Brian Snõddy"],"Wild Mongrel":["5/b/5bb8dd5c-a79a-4afc-80b2-64645bb17a34.jpg?1783945208","Anthony S. Waters"],"Hypnotic Specter":["b/4/b43b900f-2d9b-442b-9699-058483604ec9.jpg?1783948694","Douglas Shuler"],"Stone Rain":["5/7/57ff74cb-a2ed-4123-ac42-f72f9820049e.jpg?1783948681","Daniel Gelon"],"Brain Freeze":["5/9/59a43ef5-08f0-44fc-802d-b6cfd56b7d1f.jpg?1789015952","Tim Hildebrandt"],"Oath of Druids":["c/f/cf14de50-d123-400c-862e-2c95fd2aa23f.jpg?1783946504","Daren Bader"],"Psychatog":["6/7/6757bf0e-489f-4be2-9e41-463b59f00dd1.jpg?1783945205","Edward P. Beard, Jr."],"Blastoderm":["9/d/9db5d6c2-b11f-442a-b172-c0c99c9bec07.jpg?1783945818","Eric Peterson"],"Gaea's Cradle":["9/a/9a3cccac-c826-41ad-b595-4d53db1ab8fa.jpg?1783946579","Mark Zug"],"Reanimate":["a/e/ae1ef31c-8ca5-444c-8f39-e1d1827318f5.jpg?1783946636","Robert Bliss"],"Academy Rector":["4/3/4367bc78-0912-4abd-8edd-bc792558d01a.jpg?1783946087","Heather Hudson"],"Replenish":["7/f/7fd2fe13-bbc0-42b7-bc42-3b51910ce118.jpg?1783946084","Jim Nelson"],"Jackal Pup":["3/7/3707ab74-9aec-4d30-86e0-ffa5f72d5b4f.jpg?1783946629","Susan Van Camp"],"Stasis":["b/6/b6cef408-5b4b-49f6-9531-be544815b93f.jpg?1783948701","Fay Jones"],"Opposition":["9/5/95be2701-af7c-483e-8165-e8bd4b2774ed.jpg?1783946078","Todd Lockwood"],"Terravore":["c/3/c39c412b-2f21-483a-b744-5d55bc007c0d.jpg?1783945208","Jim Nelson"],"Pernicious Deed":["a/e/ae4cbb33-4947-49f0-b612-a92141fbfaa6.jpg?1783945332","Christopher Moeller"],"Doomsday":["5/b/5b3c6d87-9383-450b-bba5-33435b6b0d08.jpg?1792506446","Adrian Smith"],"Prophetic Bolt":["7/9/79f74291-c452-4a60-bf5f-73efad6583d4.jpg?1783945331","Dave Dorman"],"Tinker":["7/d/7da23b15-dfb8-4267-9b33-d7a4c035c434.jpg?1783946244","Mike Raabe"],"Wrath of God":["a/2/a2788d69-6a3a-42f0-8736-cc6b57755ecd.jpg?1783948708","Quinton Hoover"],"Standstill":["3/e/3ede3f6f-e642-4fe4-aa37-0f01cdf4d149.jpg?1783945256","Heather Hudson"],"Savannah Lions":["d/0/d05b92bd-797e-413f-a8b0-32e0937a1ee0.jpg?1783948710","Daniel Gelon"],"Hermit Druid":["3/e/3efc0622-ac2c-4722-ba05-961cc98c5940.jpg?1783946550","Heather Hudson"]};
 function defaultArt(name){ const card=ARCH_CARD[key(name)], a=card&&CARD_ART[card]; return a?{url:'https://cards.scryfall.io/art_crop/front/'+a[0],artist:a[1],card}:null; }
 function initials(n){ return String(n||'?').split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase(); }
 function sbTile(deckId,g){
-  const p=planFor(deckId,g.name), art=archArt(g.name,deckId), io=p?{i:parseList(p.in).total,o:parseList(p.out).total}:null;
+  const art=archArt(g.name,deckId);
   return `<button type="button" class="sbtile" data-act="sb-open" data-deck="${esc(deckId)}" data-arch="${esc(g.name)}">
-    <span class="sbart">${art?`<img src="${esc(art.url)}" alt="" decoding="async">`:`<span class="sbini">${esc(initials(g.name))}</span>`}${io?`<span class="sbio"><span class="plus">+${io.i}</span> <span class="minus">−${io.o}</span></span>`:''}</span>
+    <span class="sbart">${art?`<img src="${esc(art.url)}" alt="" decoding="async">`:`<span class="sbini">${esc(initials(g.name))}</span>`}</span>
     <span class="sbname">${esc(g.name)}</span>
-    <span class="sbrec">${g.ms.length?`${recTxt(g.r)} · <span class="${wrCls(g.r.wr)}">${pctTxt(g.r.wr)}</span>`:'not faced'}</span>
   </button>`;
 }
 function openPlanView(deckId,arch){
@@ -806,6 +808,50 @@ function openPlanView(deckId,arch){
   </div>`;
   openSheet(html,{kind:'planview',deckId});
 }
+/* ---------- sideboard export: one A4 landscape table, every matchup with cards in / out ---------- */
+function sbGuideRows(deckId){
+  const groups=byArchetype(S.matches.filter(m=>m.deckId===deckId)).filter(x=>x.k!=='?'&&x.k!=='unknown');
+  S.plans.filter(p=>p.deckId===deckId).forEach(p=>{ const k=key(p.archetype); if(k&&!groups.some(g=>g.k===k)) groups.push({k,name:String(p.archetype).trim(),ms:[],r:rec([])}); });
+  groups.sort((a,b)=>a.name.localeCompare(b.name,LOCALE,{sensitivity:'base'}));
+  const fmt=t=>String(t||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+  return groups.map(g=>{ const p=planFor(deckId,g.name); return {name:g.name,inn:p?fmt(p.in):[],out:p?fmt(p.out):[],notes:p?String(p.notes||'').trim():''}; });
+}
+function sbGuideTable(deckId){
+  const d=deckById(deckId), rows=sbGuideRows(deckId);
+  const li=a=>a.length?a.map(x=>`<div>${esc(x)}</div>`).join(''):'<div class="nil">—</div>';
+  return `<div class="sbx-doc"><div class="sbx-h"><b><strong>${esc(d?d.name:'')}</strong> · Sideboard guide</b><span>MTG Files · ${esc(fmtDate(today()))}</span></div>
+  <table class="sbx-t"><thead><tr><th class="c-m">Matchup</th><th class="c-in">In</th><th class="c-out">Out</th><th>Notes</th></tr></thead><tbody>${rows.map(r=>`<tr><td class="c-m">${esc(r.name)}</td><td class="c-in">${li(r.inn)}</td><td class="c-out">${li(r.out)}</td><td class="c-n">${esc(r.notes)}</td></tr>`).join('')}</tbody></table></div>`;
+}
+const SBX_CSS=`@page{size:A4 landscape;margin:9mm}
+.sbx-doc{font:9pt/1.3 Inter,Arial,sans-serif;color:#111;background:#fff}
+.sbx-h{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid #111;padding-bottom:4px;margin-bottom:6px;font-size:12pt}
+.sbx-h b{font-weight:400}
+.sbx-h span{font-size:8.5pt;color:#555}
+.sbx-t{width:100%;border-collapse:collapse;table-layout:fixed}
+.sbx-t th{text-align:left;font-size:8pt;text-transform:uppercase;letter-spacing:.06em;color:#333;border-bottom:1px solid #111;padding:3px 6px}
+.sbx-t td{vertical-align:top;border-bottom:1px solid #ccc;padding:4px 6px;font-size:8.5pt}
+.sbx-t tr{break-inside:avoid;page-break-inside:avoid}
+.sbx-t .c-m{width:19%;font-weight:700}
+.sbx-t .c-in,.sbx-t .c-out{width:22%}
+.sbx-t td.c-in{color:#0a6b2c} .sbx-t td.c-out{color:#a3122e}
+.sbx-t .c-n{white-space:pre-wrap;color:#333}
+.sbx-t .nil{color:#999}
+.sbx-t th.c-in{color:#0a6b2c} .sbx-t th.c-out{color:#a3122e}`;
+function openSbExport(deckId){
+  const html=`<div class="sbx">${sheetHead('Export sideboard')}
+    <p class="hint">A4 landscape table with every matchup and the cards in / out. Print it or save it as PDF (in the print screen on iPhone: Share › Save to Files).</p>
+    <div class="sheet-actions"><button type="button" class="btn" data-act="sbx-share">Share as file</button><span class="spacer"></span><button type="button" class="btn primary" data-act="sbx-print">Print / PDF</button></div>
+    <div class="sbx-paper">${sbGuideTable(deckId)}</div></div>`;
+  openSheet(html,{kind:'sbx',deckId});
+  let st=document.getElementById('sbx-style'); if(!st){ st=document.createElement('style'); st.id='sbx-style'; document.head.appendChild(st); }
+  st.textContent=SBX_CSS+`\n@media print{ body>*:not(#sheet){display:none!important} :root{color-scheme:light!important} html,body{background:#fff!important;background-image:none!important} body::before{display:none} #sheet{position:static!important;width:auto!important;border:0!important;box-shadow:none!important;background:#fff!important;overflow:visible!important;padding:0!important} .sbx>.sheet-head,.sbx>.hint,.sbx>.sheet-actions{display:none!important} .sheet-inner{padding:0!important} .sbx-paper{box-shadow:none!important;padding:0!important;border:0!important} }`;
+}
+async function shareSbExport(){
+  const id=sheetCtx&&sheetCtx.deckId, d=deckById(id); if(!d) return;
+  const doc=`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(d.name)} – Sideboard guide</title><style>body{margin:0;padding:12px;background:#fff}${SBX_CSS}</style></head><body>${sbGuideTable(id)}</body></html>`;
+  try{ await S.dl.save({filename:slug(d.name)+'-sideboard-guide.html',data:doc,type:'text/html'}); }
+  catch(e){ if(!(e&&e.code==='declined')) toast('Couldn’t share the file: try Print / PDF.','err'); }
+}
 function viewSideboard(){
   let h='<div class="viewhead"><h1>Sideboard</h1></div>';
   const decks=activeDecks();
@@ -815,16 +861,18 @@ function viewSideboard(){
   const d=deckById(deckId);
   const groups=byArchetype(S.matches.filter(m=>m.deckId===deckId)).filter(x=>x.k!=='?');
   S.plans.filter(p=>p.deckId===deckId).forEach(p=>{ const k=key(p.archetype); if(k&&!groups.some(g=>g.k===k)) groups.push({k,name:String(p.archetype).trim(),ms:[],r:rec([])}); });
-  h+=`<div class="filters"><select id="sb-deck" aria-label="Deck">${activeDecks(deckId).map(x=>`<option value="${esc(x.id)}"${x.id===deckId?' selected':''}>${esc(x.name)}</option>`).join('')}</select><button type="button" class="btn" data-act="edit-plan" data-deck="${esc(deckId)}" data-arch="">+ Plan for an archetype</button></div>`;
+  groups.sort((a,b)=>a.name.localeCompare(b.name,LOCALE,{sensitivity:'base'})); S.sbCur=deckId;
+  h=`<div class="viewhead"><h1>Sideboard</h1><div class="head-actions"><button type="button" class="btn sm" data-act="sb-export" data-deck="${esc(deckId)}">Export</button></div></div>`;
+  h+=`<div class="filters"><select id="sb-deck" aria-label="Deck">${activeDecks(deckId).map(x=>`<option value="${esc(x.id)}"${x.id===deckId?' selected':''}>${esc(x.name)}</option>`).join('')}</select></div>`;
   if(!groups.length) return h+`<div class="panel empty">No archetypes faced with ${esc(d.name)} and no plans written yet. Add a plan or log some matches.</div>`;
-  return h+`<p class="hint">Tap a matchup to see what comes in and out. +In / −Out are the cards you swap.</p><div class="sbgrid">${groups.map(g=>sbTile(deckId,g)).join('')}</div>`;
+  return h+`<div class="sbgrid">${groups.map(g=>sbTile(deckId,g)).join('')}</div>`;
 }
 
 const VIEW_FN={summary:viewSummary,matches:viewMatches,leagues:viewLeagues,tournaments:viewTournaments,decks:viewDecks,sideboard:viewSideboard};
 function render(){
   const br=document.querySelector('.brand'); if(br){ if(S.view==='summary') br.setAttribute('aria-current','page'); else br.removeAttribute('aria-current'); }
   /* the floating button changes with the section; Sideboard has none */
-  const fab=document.querySelector('.fab'), FAB={summary:['new-match','+ Log a match'],matches:['new-match','+ Log a match'],leagues:['new-league','+ New league'],tournaments:['new-tour','+ New event'],decks:['new-deck','+ New deck']}[S.view];
+  const fab=document.querySelector('.fab'), FAB={summary:['new-match','+ Log a match'],matches:['new-match','+ Log a match'],leagues:['new-league','+ New league'],tournaments:['new-tour','+ New event'],decks:['new-deck','+ New deck'],sideboard:['new-plan','+ Add']}[S.view];
   if(fab){ fab.hidden=!FAB; if(FAB){ fab.dataset.act=FAB[0]; fab.textContent=FAB[1]; } }
   document.querySelectorAll('.tab').forEach(a=>{ if(a.getAttribute('href')==='#'+S.view) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
   const main=$('#main'), ae=document.activeElement, fid=ae&&main.contains(ae)?ae.id:'';
@@ -1190,6 +1238,10 @@ document.addEventListener('click',async e=>{
       case 'new-match-tour': { const tt=tourById(id); if(tt) openMatch(null,{tournamentId:tt.id,deckId:tt.deckId,format:tt.format,date:tt.date}); break; }
       case 'edit-plan': openPlan(t.dataset.deck,t.dataset.arch||''); break;
       case 'sb-open': openPlanView(t.dataset.deck,t.dataset.arch||''); break;
+      case 'new-plan': if(S.sbCur&&deckById(S.sbCur)) openPlan(S.sbCur,''); else openDeck(null); break;
+      case 'sb-export': openSbExport(t.dataset.deck); break;
+      case 'sbx-print': window.print(); break;
+      case 'sbx-share': await shareSbExport(); break;
       case 'art-search': await artSearch(); break;
       case 'art-pick': { const a=sheetCtx&&sheetCtx.artList&&sheetCtx.artList[+t.dataset.i]; if(a){ sheetCtx.art=a; const u=$('#art-url'); if(u) u.value=''; artCur(); document.querySelectorAll('.art-opt').forEach(b=>b.classList.toggle('on',b===t)); } break; }
       case 'art-clear': sheetCtx.art=null; { const u=$('#art-url'); if(u) u.value=''; } artCur(); break;
