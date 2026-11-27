@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script>if(/iPhone|iPad|iPod/.test(navigator.userAgent)){var vp=document.querySelector('meta[name=viewport]');vp.content+=',maximum-scale=1';}</script>
 <title>MTG Match Log</title>
 <meta name="description" content="Personal Magic: The Gathering match log. Data stays on this device.">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
@@ -104,6 +105,9 @@ h1,h2,h3{font-family:var(--font-display);text-wrap:balance;margin:0;letter-spaci
 .head-actions{display:flex;gap:8px;flex-wrap:wrap}
 .filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .filters select{width:auto;min-width:0;max-width:100%}
+/* Summary/list filters: three compact selects that stay on one line, even on a phone */
+.flt-sel{display:flex;gap:6px;flex:1 1 300px;min-width:0;max-width:520px}
+.flt-sel select{flex:1 1 0;width:0;min-width:0;max-width:none;min-height:34px;padding:5px 22px 5px 9px;font-size:13px;border-radius:8px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23888' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
 .note{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:10px 14px;border-radius:10px;background:var(--accent-soft);color:var(--fg);font-size:13.5px}
 .note.bad{background:var(--loss-soft)}
 .note.ex{background:var(--draw-soft)}
@@ -288,7 +292,7 @@ textarea.prose{font-family:var(--font-body);font-size:14px}
 .toast.out{opacity:0}
 
 /* iPhone: 16px fields stop Safari from zooming in when a field gets focus */
-@supports (-webkit-touch-callout:none){ input[type=text],input[type=date],input[type=number],select,textarea{font-size:16px} }
+@supports (-webkit-touch-callout:none){ input[type=text],input[type=date],input[type=number],select,textarea{font-size:16px} .flt-sel select{font-size:14px} }
 body{-webkit-tap-highlight-color:transparent}
 .file-in{position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0}
 </style>
@@ -479,10 +483,10 @@ function filtersHTML(){
   const used=new Set(S.matches.map(m=>m.format).concat(S.leagues.map(l=>l.format)).concat(S.tournaments.map(t=>t.format)).filter(Boolean));
   const fmts=[...new Set(FORMATS.concat([...used]))].filter(f=>used.has(f)||S.f.format===f);
   const on=S.f.format!=='all'||S.f.deck!=='all'||S.f.period!=='all';
-  return `<div class="filters" role="group" aria-label="Filters">
+  return `<div class="filters" role="group" aria-label="Filters"><div class="flt-sel">
     <select id="flt-format" data-filter="format" aria-label="Format"><option value="all">All formats</option>${fmts.map(f=>`<option value="${esc(f)}"${S.f.format===f?' selected':''}>${esc(f)}</option>`).join('')}</select>
     <select id="flt-deck" data-filter="deck" aria-label="Deck"><option value="all">All decks</option>${S.decks.slice().sort(byName).map(d=>`<option value="${esc(d.id)}"${S.f.deck===d.id?' selected':''}>${esc(d.name)}${d.archived?' (archived)':''}</option>`).join('')}</select>
-    <select id="flt-period" data-filter="period" aria-label="Period">${[['all','All time'],['30','Last 30 days'],['90','Last 90 days'],['year','This year']].map(([v,l])=>`<option value="${v}"${S.f.period===v?' selected':''}>${l}</option>`).join('')}</select>
+    <select id="flt-period" data-filter="period" aria-label="Period">${[['all','All time'],['30','Last 30 days'],['90','Last 90 days'],['year','This year']].map(([v,l])=>`<option value="${v}"${S.f.period===v?' selected':''}>${l}</option>`).join('')}</select></div>
     ${on?'<button type="button" class="btn ghost sm" data-act="clear-filters">Clear filters</button>':''}
   </div>`;
 }
@@ -507,24 +511,17 @@ function viewSummary(){
   const ms=filtered();
   let h=`<div class="viewhead"><h1>Summary</h1><div class="head-actions"><button type="button" class="btn sm" data-act="import">Import backup</button>${S.dl?'<button type="button" class="btn sm" data-act="export">Export backup</button>':''}</div></div>${filtersHTML()}`;
   if(!ms.length) return h+'<div class="panel empty">No matches with these filters.</div>';
-  const r=rec(ms), g=gameRec(ms);
-  const done=leaguesFiltered().map(leagueState).filter(x=>x.st==='done'); const tro=done.filter(x=>x.trophy).length;
+  const r=rec(ms);
   h+=`<section class="tiles">
     ${tile('Match record',recTxt(r),plural(r.n,'match','matches')+(r.D?' · '+plural(r.D,'draw','draws'):''))}
     ${tile('Match win rate',pctTxt(r.wr),'draws excluded',wrCls(r.wr))}
-    ${tile('Game win rate',pctTxt(g.wr),g.W+'–'+g.L+' in games',wrCls(g.wr))}
-    ${tile('League trophies',String(tro),done.length?plural(done.length,'league completed','leagues completed'):'no leagues completed')}
   </section>`;
   const last=ms.slice(0,20).reverse();
   h+=`<section class="panel"><div class="panel-head"><h2>Recent form</h2><span class="muted sm">last ${last.length}, oldest to newest</span></div><div class="strip">${last.map(m=>{ const x=resultOf(m); return `<span class="sq ${x}" title="${esc(fmtDate(m.date)+' · vs '+(m.opp||'Unknown')+' · '+scoreOf(m))}">${x}</span>`; }).join('')}</div></section>`;
-  const evs=EVENTS.map(([k,l])=>({label:esc(l),r:rec(ms.filter(m=>m.event===k))})).filter(x=>x.r.n);
   const arch=byArchetype(ms), shown=S.archAll?arch:arch.slice(0,12);
   const dmap=new Map(); ms.forEach(m=>{ const k=m.deckId||'?'; if(!dmap.has(k)) dmap.set(k,[]); dmap.get(k).push(m); });
   const drows=[...dmap.entries()].map(([id,list])=>{ const d=deckById(id); return {label:(d?pips(d.colors)+' ':'')+esc(deckLabel(id,list[0].deckName)),r:rec(list)}; }).sort((a,b)=>b.r.n-a.r.n);
-  h+=`<section class="grid-2">
-    <div class="panel"><h2>By event type</h2>${statTable('Event',evs)}</div>
-    <div class="panel"><h2>By deck</h2>${statTable('Deck',drows)}</div>
-  </section>
+  h+=`<section class="panel"><h2>By deck</h2>${statTable('Deck',drows)}</section>
   <section class="panel"><h2>Vs archetypes</h2>${statTable('Archetype',shown.map(a=>({label:esc(a.name),r:a.r})))}${arch.length>12?`<button type="button" class="btn ghost sm" data-act="arch-all" style="margin-top:8px">${S.archAll?'Show fewer':'Show all ('+arch.length+')'}</button>`:''}</section>`;
   return h;
 }
