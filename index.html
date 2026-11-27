@@ -4,60 +4,37 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <script>if(/iPhone|iPad|iPod/.test(navigator.userAgent)){var vp=document.querySelector('meta[name=viewport]');vp.content+=',maximum-scale=1';}</script>
-<title>MTG Match Log</title>
+<title>MTG Files</title>
 <meta name="description" content="Personal Magic: The Gathering match log. Data stays on this device.">
-<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#161d27" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#06060d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="MTG Log">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="MTG Files">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="format-detection" content="telephone=no">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<style>:root{color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#06060d;color:#e9ecff}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Tilt+Neon&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
 <style>
 /* Layout: sticky header band with tabs; one 1120px column with summary tiles, then paired panels; all editing happens in a right-hand sheet. */
 :root{
-  --bg:#f2f4f7; --surface:#ffffff; --surface-2:#e9edf3; --line:#d6dce6; --fg:#131a25; --muted:#586477;
-  --accent:#2a59c9; --accent-fg:#ffffff; --accent-soft:#e1e9fa;
-  --win:#17804a; --win-soft:#d8efe1; --on-win:#ffffff;
-  --loss:#c23636; --loss-soft:#f6dddd; --on-loss:#ffffff;
-  --draw:#946000; --draw-soft:#f4e8cd; --on-draw:#ffffff;
-  --mana-w:#f3eac4; --mana-u:#2f73cf; --mana-b:#3a3540; --mana-r:#d4442f; --mana-g:#2a8a52; --mana-ring:rgba(0,0,0,.18);
-  --scrim:rgba(14,20,30,.38); --shadow:0 18px 48px rgba(14,20,30,.18);
-  --s1:#257de0; --s2:#f47230; --s3:#00b894; --s4:#f2a600; --s5:#ee7fac; --s6:#008a17; --s7:#6a4ce2; --s8:#ec4647; --s9:#1a4f9c; --s10:#a0662a; --s11:#7fc8f8; --s12:#9b2f8a; --s13:#8ea31a; --s14:#f7a58a; --s15:#0b7a75; --s16:#c9a0f0; --s17:#5d6b7d; --s18:#e0c040; --s-other:#d3d9e2;
-  --font-display:"Archivo","Segoe UI",system-ui,sans-serif;
+  --bg:#06060d; --surface:#0c0d1c; --surface-2:#151733; --line:#1f2546; --fg:#e9ecff; --muted:#8a8fb3;
+  --accent:#19f0ff; --accent-fg:#04161a; --accent-soft:#0d2330; --mag:#ff2bd6; --glow:rgba(25,240,255,.45);
+  --win:#7dff6a; --win-soft:#10260f; --on-win:#06260a;
+  --loss:#ff4d6d; --loss-soft:#2a0d16; --on-loss:#2a0610;
+  --draw:#ffd23f; --draw-soft:#2a2408; --on-draw:#2a2005;
+  --mana-w:#f8f0c8; --mana-u:#3fa0ff; --mana-b:#b48cff; --mana-r:#ff5a4a; --mana-g:#5dff8a; --mana-ring:rgba(255,255,255,.22);
+  --scrim:rgba(0,0,0,.66); --shadow:0 18px 48px rgba(0,0,0,.6);
+  --s1:#19f0ff; --s2:#ff2bd6; --s3:#7dff6a; --s4:#ffd23f; --s5:#9b7bff; --s6:#ff8a3d; --s7:#3fa0ff; --s8:#ff4d6d; --s9:#5dffd2; --s10:#ff9be9; --s11:#c6ff3d; --s12:#b0c4ff; --s13:#ffb36b; --s14:#00b3ff; --s15:#e07bff; --s16:#a8ffef; --s17:#7a80b0; --s18:#ffe9a0; --s-other:#2a2d52;
+  color-scheme:dark;
+  --font-display:"Rajdhani","Archivo","Segoe UI",system-ui,sans-serif;
   --font-body:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
   --font-mono:"JetBrains Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#0e131a; --surface:#161d27; --surface-2:#1f2834; --line:#2b3644; --fg:#e3e8ef; --muted:#909cb0;
-    --accent:#83a8ff; --accent-fg:#0b1222; --accent-soft:#1d2a47;
-    --win:#56c98c; --win-soft:#14301f; --on-win:#07130c;
-    --loss:#ff8585; --loss-soft:#3a1c21; --on-loss:#1d0a0b;
-    --draw:#e8b84f; --draw-soft:#362b13; --on-draw:#1d1606;
-    --mana-w:#e8deb2; --mana-u:#4b8be2; --mana-b:#5a5461; --mana-r:#e25b46; --mana-g:#3ba267; --mana-ring:rgba(255,255,255,.22);
-    --scrim:rgba(0,0,0,.58); --shadow:0 18px 48px rgba(0,0,0,.55);
-    --s1:#338ced; --s2:#e76624; --s3:#00a888; --s4:#d28e05; --s5:#e24d8b; --s6:#0aac23; --s7:#9887ef; --s8:#eb6263; --s9:#5b86d6; --s10:#b9814a; --s11:#7fc8f8; --s12:#c157b0; --s13:#9fb52a; --s14:#f2a08a; --s15:#1fa39c; --s16:#c9a0f0; --s17:#8a97a8; --s18:#e0c040; --s-other:#3a4452;
-    color-scheme:dark;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#0e131a; --surface:#161d27; --surface-2:#1f2834; --line:#2b3644; --fg:#e3e8ef; --muted:#909cb0;
-  --accent:#83a8ff; --accent-fg:#0b1222; --accent-soft:#1d2a47;
-  --win:#56c98c; --win-soft:#14301f; --on-win:#07130c;
-  --loss:#ff8585; --loss-soft:#3a1c21; --on-loss:#1d0a0b;
-  --draw:#e8b84f; --draw-soft:#362b13; --on-draw:#1d1606;
-  --mana-w:#e8deb2; --mana-u:#4b8be2; --mana-b:#5a5461; --mana-r:#e25b46; --mana-g:#3ba267; --mana-ring:rgba(255,255,255,.22);
-  --scrim:rgba(0,0,0,.58); --shadow:0 18px 48px rgba(0,0,0,.55);
-  --s1:#338ced; --s2:#e76624; --s3:#00a888; --s4:#d28e05; --s5:#e24d8b; --s6:#0aac23; --s7:#9887ef; --s8:#eb6263; --s9:#5b86d6; --s10:#b9814a; --s11:#7fc8f8; --s12:#c157b0; --s13:#9fb52a; --s14:#f2a08a; --s15:#1fa39c; --s16:#c9a0f0; --s17:#8a97a8; --s18:#e0c040; --s-other:#3a4452;
-  color-scheme:dark;
+  --font-neon:"Tilt Neon","Rajdhani",system-ui,sans-serif;
 }
 *{box-sizing:border-box}
 html.locked{overflow:hidden}
@@ -320,13 +297,79 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}
 @supports (-webkit-touch-callout:none){ input[type=text],input[type=date],input[type=number],select,textarea{font-size:16px} .flt-sel select{font-size:14px} }
 body{-webkit-tap-highlight-color:transparent}
 .file-in{position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0}
+
+/* ===== MTG Files · neon theme (Arcade base + neon-sign result pills and floating button) ===== */
+body{background-color:var(--bg);background-image:linear-gradient(rgba(25,240,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(25,240,255,.045) 1px,transparent 1px);background-size:26px 26px;background-attachment:fixed}
+body::before{background:#06060d}
+.top{background:rgba(6,6,13,.92);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid rgba(25,240,255,.25)}
+.brand{gap:10px;font-family:var(--font-display);font-weight:700;font-size:23px;letter-spacing:.1em;color:#fff;text-shadow:0 0 10px rgba(25,240,255,.7)}
+.brand .logo{width:32px;height:32px;filter:drop-shadow(0 0 4px #19f0ff)}
+.tab{font-family:var(--font-display);font-weight:600;font-size:14.5px;letter-spacing:.06em;text-transform:uppercase;border-radius:0;padding:9px 8px 10px;color:var(--muted)}
+.tab[aria-current="page"]{background:transparent;color:var(--accent);box-shadow:inset 0 -2px 0 var(--accent);text-shadow:0 0 8px rgba(25,240,255,.8)}
+h1,h2,h3{letter-spacing:.06em}
+.viewhead h1{font-size:26px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#fff}
+.panel h2,.sec{font-family:var(--font-display);font-size:17px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#fff}
+.panel,.tile,.lcard,.dcard,.plan{border-color:rgba(25,240,255,.22)}
+.tile{border-color:rgba(25,240,255,.35);box-shadow:0 0 22px rgba(25,240,255,.12)}
+.tiles .tile:nth-child(2){border-color:rgba(255,43,214,.45);box-shadow:0 0 22px rgba(255,43,214,.16)}
+.lbl{font-family:var(--font-display);font-weight:700;font-size:12px;letter-spacing:.14em}
+.tile .val{color:#fff;text-shadow:0 0 12px rgba(255,255,255,.4)}
+.tile .val.good{color:var(--win);text-shadow:0 0 12px rgba(125,255,106,.6)}
+.tile .val.bad{color:var(--loss);text-shadow:0 0 12px rgba(255,77,109,.6)}
+.tiles .tile:nth-child(2) .val{color:#ff6be3;text-shadow:0 0 14px rgba(255,43,214,.8)}
+td.good,.good{text-shadow:0 0 8px rgba(125,255,106,.55)}
+th{font-family:var(--font-display);font-weight:700;font-size:11.5px;letter-spacing:.12em}
+td{border-bottom-color:rgba(25,240,255,.08)}
+.btn{background:var(--surface);border-color:rgba(25,240,255,.3)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg);box-shadow:0 0 14px var(--glow);font-family:var(--font-display);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.btn.ghost{background:transparent;border-color:transparent;font-family:var(--font-display);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.btn.danger{border-color:rgba(255,77,109,.45)}
+input[type=text],input[type=date],input[type=number],select,textarea{background:#08091a;border-color:rgba(25,240,255,.3)}
+.sheet{background:#0a0b18;border-left:1px solid rgba(25,240,255,.3);box-shadow:-10px 0 40px rgba(25,240,255,.08)}
+.sheet-head h2{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.08em;font-size:22px}
+/* results: round neon tubes */
+.sq{border-radius:999px;background:transparent;font-family:var(--font-neon);font-weight:400;font-size:12px;border:2px solid transparent}
+.sq.W{background:transparent;color:#e8ffe9;border-color:var(--win);box-shadow:0 0 8px var(--win),inset 0 0 6px rgba(125,255,106,.55)}
+.sq.L{background:transparent;color:#ffe3e7;border-color:var(--loss);box-shadow:0 0 8px var(--loss),inset 0 0 6px rgba(255,77,109,.55)}
+.sq.D{background:transparent;color:#fff6d6;border-color:var(--draw);box-shadow:0 0 8px var(--draw),inset 0 0 6px rgba(255,210,63,.5)}
+.sq.empty{border:2px dashed var(--line);box-shadow:none}
+.strip{gap:6px}
+.m-line .sq{width:24px;height:24px}
+.mrow:hover,.lrow-btn:hover{background:rgba(25,240,255,.05)}
+.chip.W{box-shadow:0 0 8px rgba(125,255,106,.35)}
+.dbar i{box-shadow:0 0 10px var(--glow)}
+.mleg .sw{border-radius:50%;box-shadow:0 0 6px currentColor}
+.donut{filter:drop-shadow(0 0 6px rgba(25,240,255,.4))}
+.toast{background:#0c0d1c;color:#fff;border:1px solid var(--accent);box-shadow:0 0 16px var(--glow)}
+/* floating "+ Log a match": always on top, above the home indicator */
+.fab{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:35;font-family:var(--font-neon);font-size:19px;color:#f2feff;background:rgba(6,6,13,.78);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:2px solid var(--accent);border-radius:999px;padding:12px 32px;min-height:52px;cursor:pointer;white-space:nowrap;box-shadow:0 0 16px var(--accent),inset 0 0 12px rgba(25,240,255,.6),0 8px 30px rgba(0,0,0,.6);text-shadow:0 0 8px var(--accent)}
+.fab:active{transform:translateX(-50%) scale(.97)}
+.wrap{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
+.toasts{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+html.locked .fab{display:none}
+/* startup animation */
+.splash{position:fixed;inset:0;z-index:100;background:#030308;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .35s}
+.splash.out{opacity:0;pointer-events:none}
+.splash-in{display:flex;flex-direction:column;align-items:center;gap:24px}
+.splash svg{width:160px;height:160px;filter:drop-shadow(0 0 8px #19f0ff)}
+.sp-line{stroke-dasharray:300;stroke-dashoffset:300;animation:sp-draw .9s .05s ease-out forwards}
+.sp-d{opacity:0;animation:sp-dot .5s forwards}
+.sp-core{opacity:0;transform-origin:50px 52px;animation:sp-core .45s 1s forwards}
+.sp-name{font-family:var(--font-display);font-weight:700;font-size:42px;letter-spacing:.16em;color:#fff;opacity:0;text-shadow:0 0 6px #fff,0 0 16px #19f0ff,0 0 36px #19f0ff;animation:sp-flick .7s 1.05s forwards}
+.sp-tag{font-size:12.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);opacity:0;animation:sp-tag .5s 1.5s forwards}
+.sp-skip{position:absolute;bottom:calc(30px + env(safe-area-inset-bottom,0px));font-size:12px;color:#4a4f74}
+@keyframes sp-draw{to{stroke-dashoffset:0}}
+@keyframes sp-dot{0%{opacity:0}40%{opacity:1}55%{opacity:.2}70%,100%{opacity:1}}
+@keyframes sp-core{0%{opacity:0;transform:scale(.4)}70%{opacity:1;transform:scale(1.15)}100%{opacity:1;transform:scale(1)}}
+@keyframes sp-flick{0%{opacity:0}15%{opacity:1}25%{opacity:.15}35%{opacity:1}50%{opacity:.4}65%,100%{opacity:1}}
+@keyframes sp-tag{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 </style>
 </head>
 <body>
 
 <header class="top">
   <div class="top-inner">
-    <div class="brand"><span class="brand-mark" aria-hidden="true"><span class="pip W"></span><span class="pip U"></span><span class="pip B"></span><span class="pip R"></span><span class="pip G"></span></span>MTG Match Log</div>
+    <div class="brand"><svg class="logo" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,12 86,38 72,82 28,82 14,38" fill="none" stroke="#19f0ff" stroke-width="5" stroke-linejoin="round"/><circle cx="50" cy="12" r="9" fill="#f8f0c8"/><circle cx="86" cy="38" r="9" fill="#3fa0ff"/><circle cx="72" cy="82" r="9" fill="#b48cff"/><circle cx="28" cy="82" r="9" fill="#ff5a4a"/><circle cx="14" cy="38" r="9" fill="#5dff8a"/><circle cx="50" cy="52" r="11" fill="none" stroke="#ff2bd6" stroke-width="5"/></svg><span>MTG FILES</span></div>
     <nav class="tabs" aria-label="Sections">
       <a class="tab" href="#summary">Summary</a>
       <a class="tab" href="#matches">Matches</a>
@@ -335,13 +378,24 @@ body{-webkit-tap-highlight-color:transparent}
       <a class="tab" href="#decks">Decks</a>
       <a class="tab" href="#sideboard">Sideboard</a>
     </nav>
-    <button type="button" class="btn primary btn-new" data-act="new-match">+ Match</button>
   </div>
 </header>
 <main id="main" class="wrap"></main>
 <div id="sheet-backdrop" class="sheet-backdrop" hidden></div>
 <aside id="sheet" class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden><div id="sheet-body" class="sheet-inner"></div></aside>
+<button type="button" class="fab" data-act="new-match">+ Log a match</button>
 <div id="toasts" class="toasts" aria-live="polite"></div>
+<div id="splash" class="splash" aria-hidden="true"><div class="splash-in">
+  <svg viewBox="0 0 100 100"><polygon class="sp-line" points="50,12 86,38 72,82 28,82 14,38" fill="none" stroke="#19f0ff" stroke-width="2.5" stroke-linejoin="round"/><circle class="sp-d" style="animation-delay:.25s" cx="50" cy="12" r="7" fill="#f8f0c8"/><circle class="sp-d" style="animation-delay:.4s" cx="86" cy="38" r="7" fill="#3fa0ff"/><circle class="sp-d" style="animation-delay:.55s" cx="72" cy="82" r="7" fill="#b48cff"/><circle class="sp-d" style="animation-delay:.7s" cx="28" cy="82" r="7" fill="#ff5a4a"/><circle class="sp-d" style="animation-delay:.85s" cx="14" cy="38" r="7" fill="#5dff8a"/><circle class="sp-core" cx="50" cy="52" r="10" fill="none" stroke="#ff2bd6" stroke-width="2.5"/></svg>
+  <span class="sp-name">MTG FILES</span><span class="sp-tag">Shuffle up and log</span>
+</div><span class="sp-skip">Tap to skip</span></div>
+<script>
+/* Startup animation: about 2 s on every launch, a tap skips it, reduced-motion skips it entirely. */
+(function(){ var sp=document.getElementById('splash'); if(!sp) return; var done=false;
+  function end(){ if(done) return; done=true; sp.classList.add('out'); setTimeout(function(){ if(sp.parentNode) sp.parentNode.removeChild(sp); },400); }
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){ sp.parentNode.removeChild(sp); return; }
+  sp.addEventListener('click',end); setTimeout(end,2300); })();
+</script>
 <input type="file" id="import-file" class="file-in" accept=".json,application/json" tabindex="-1" aria-hidden="true">
 
 <script>
@@ -540,7 +594,7 @@ function banners(){
 
 function emptyStart(){ return `<section class="panel start"><h1>Your match log</h1><p>Log your matches here after playing: deck, opponent archetype, the result of each game and whether you were on the play or on the draw. The stats update by themselves.</p><ol class="steps"><li>Log a match with <strong>+ Match</strong>. You can create the deck right there.</li><li>Pick <strong>League</strong> as the event: the league opens by itself and counts matches up to 5.</li><li>Save your list in <strong>Decks</strong>, and write what comes in and out against each archetype in <strong>Sideboard</strong>.</li></ol><div class="start-actions"><button type="button" class="btn primary" data-act="new-match">+ Log your first match</button><button type="button" class="btn" data-act="new-deck">Create a deck</button></div><p class="hint">Moving your log from another device? <button type="button" class="btn ghost sm" data-act="import">Import a backup</button></p></section>`; }
 function loadingHTML(){ return `<div class="tiles">${'<div class="tile skel"><span class="lbl">&nbsp;</span><span class="val">&nbsp;</span><span class="sub">&nbsp;</span></div>'.repeat(4)}</div><p class="muted center">Loading your data…</p>`; }
-function noDbHTML(){ return '<section class="panel start"><h1>MTG Match Log</h1><p>The log keeps its data on this device, but this browser isn’t allowing it: Private Browsing is probably on. Open the app from its Home Screen icon, or turn Private Browsing off in Safari.</p></section>'; }
+function noDbHTML(){ return '<section class="panel start"><h1>MTG Files</h1><p>The log keeps its data on this device, but this browser isn’t allowing it: Private Browsing is probably on. Open the app from its Home Screen icon, or turn Private Browsing off in Safari.</p></section>'; }
 
 /* ---------- views ---------- */
 /* Share of matches by opponent archetype: top 5 + Other, as a donut with a labelled legend. */
@@ -966,7 +1020,7 @@ async function exportBackup(){
   if(!S.dl){ toast('Export isn’t available in this view.','err'); return; }
   const out={app:'MTG Match Log',version:1,exportedAt:new Date().toISOString(),collections:{}};
   COLS.forEach(c=>{ const o={}; S[c].forEach(d=>{ const copy=Object.assign({},d); delete copy.id; o[d.id]=copy; }); out.collections[c]=o; });
-  try{ await S.dl.save({filename:'mtg-match-log-backup-'+today()+'.json',data:JSON.stringify(out,null,2)}); if(S.db&&S.db.markExported) S.db.markExported(); toast('Backup saved'); scheduleRender(); }
+  try{ await S.dl.save({filename:'mtg-files-backup-'+today()+'.json',data:JSON.stringify(out,null,2)}); if(S.db&&S.db.markExported) S.db.markExported(); toast('Backup saved'); scheduleRender(); }
   catch(e){ const c=e&&e.code; if(c==='declined') return; toast(c==='rate_limited'?'A save prompt is already open.':'Couldn’t export: try again.','err'); }
 }
 /* Import a backup file made by Export backup (here or on claude.ai). */

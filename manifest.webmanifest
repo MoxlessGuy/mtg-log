@@ -1,13 +1,13 @@
 {
-  "name": "MTG Match Log",
-  "short_name": "MTG Log",
+  "name": "MTG Files",
+  "short_name": "MTG Files",
   "description": "Personal Magic: The Gathering match log. Data stays on this device.",
   "lang": "en",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f2f4f7",
-  "theme_color": "#ffffff",
+  "background_color": "#06060d",
+  "theme_color": "#06060d",
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
